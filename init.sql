@@ -1,7 +1,16 @@
-DROP DATABASE  IF EXISTS `jobportal`;
+-- database/init.sql
+DROP DATABASE IF EXISTS `jobportal`;
+
 CREATE DATABASE `jobportal`;
+
+DROP USER IF EXISTS 'jobportal'@'%';
+CREATE USER 'jobportal'@'%' IDENTIFIED BY 'jobportal';
+GRANT ALL PRIVILEGES ON `jobportal`.* TO 'jobportal'@'%'; -- Grant privileges specifically to the 'jobportal' database
+FLUSH PRIVILEGES;
+
 USE `jobportal`;
 
+-- Table: `users_type`
 CREATE TABLE `users_type` (
   `user_type_id` int NOT NULL AUTO_INCREMENT,
   `user_type_name` varchar(255) DEFAULT NULL,
@@ -10,7 +19,7 @@ CREATE TABLE `users_type` (
 
 INSERT INTO `users_type` VALUES (1,'Recruiter'),(2,'Job Seeker');
 
-
+-- Table: `users`
 CREATE TABLE `users` (
   `user_id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) DEFAULT NULL,
@@ -24,7 +33,7 @@ CREATE TABLE `users` (
   CONSTRAINT `FK5snet2ikvi03wd4rabd40ckdl` FOREIGN KEY (`user_type_id`) REFERENCES `users_type` (`user_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `job_company`
 CREATE TABLE `job_company` (
   `id` int NOT NULL AUTO_INCREMENT,
   `logo` varchar(255) DEFAULT NULL,
@@ -32,7 +41,7 @@ CREATE TABLE `job_company` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `job_location`
 CREATE TABLE `job_location` (
   `id` int NOT NULL AUTO_INCREMENT,
   `city` varchar(255) DEFAULT NULL,
@@ -41,7 +50,7 @@ CREATE TABLE `job_location` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `job_seeker_profile`
 CREATE TABLE `job_seeker_profile` (
   `user_account_id` int NOT NULL,
   `city` varchar(255) DEFAULT NULL,
@@ -57,7 +66,7 @@ CREATE TABLE `job_seeker_profile` (
   CONSTRAINT `FKohp1poe14xlw56yxbwu2tpdm7` FOREIGN KEY (`user_account_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `recruiter_profile`
 CREATE TABLE `recruiter_profile` (
   `user_account_id` int NOT NULL,
   `city` varchar(255) DEFAULT NULL,
@@ -71,7 +80,7 @@ CREATE TABLE `recruiter_profile` (
   CONSTRAINT `FK42q4eb7jw1bvw3oy83vc05ft6` FOREIGN KEY (`user_account_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `job_post_activity`
 CREATE TABLE `job_post_activity` (
   `job_post_id` int NOT NULL AUTO_INCREMENT,
   `description_of_job` varchar(10000) DEFAULT NULL,
@@ -92,7 +101,7 @@ CREATE TABLE `job_post_activity` (
   CONSTRAINT `FKpjpv059hollr4tk92ms09s6is` FOREIGN KEY (`job_company_id`) REFERENCES `job_company` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `job_seeker_save`
 CREATE TABLE `job_seeker_save` (
   `id` int NOT NULL AUTO_INCREMENT,
   `job` int DEFAULT NULL,
@@ -104,7 +113,7 @@ CREATE TABLE `job_seeker_save` (
   CONSTRAINT `FKpb44x040gkdltxqy9m7jmvvf3` FOREIGN KEY (`job`) REFERENCES `job_post_activity` (`job_post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `job_seeker_apply`
 CREATE TABLE `job_seeker_apply` (
   `id` int NOT NULL AUTO_INCREMENT,
   `apply_date` datetime(6) DEFAULT NULL,
@@ -118,7 +127,7 @@ CREATE TABLE `job_seeker_apply` (
   CONSTRAINT `FKs9fftlyxws2ak05q053vi57qv` FOREIGN KEY (`user_id`) REFERENCES `job_seeker_profile` (`user_account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Table: `skills`
 CREATE TABLE `skills` (
   `id` int NOT NULL AUTO_INCREMENT,
   `experience_level` varchar(255) DEFAULT NULL,
