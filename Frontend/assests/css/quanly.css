@@ -1,0 +1,380 @@
+/* ======= RESET & BODY ======= */
+body {
+    background: #f7f8fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #222;
+    margin: 0;
+}
+
+/* ======= HEADER ======= */
+.topdev-header {
+    background-color: #fff;
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #eee;
+}
+
+.header-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* ======= LOGO & NAV ======= */
+.topdev-header .logo {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+    margin-right: 20px;
+}
+
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 25px;
+}
+
+.main-nav ul li a {
+    color: #555;
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.main-nav ul li a:hover {
+    color: #007bff;
+}
+
+/* ======= USER MENU AVATAR & DROPDOWN ======= */
+.user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+    border: 1.5px solid #e3e3e3;
+    margin-right: 2px;
+    transition: box-shadow 0.18s;
+}
+
+.user-avatar:hover {
+    box-shadow: 0 0 0 2px #1a73e8;
+}
+
+.menu-toggle .fa-chevron-down {
+    font-size: 1em;
+    color: #888;
+    margin-left: 4px;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    display: none;
+    padding: 8px 0;
+    animation: dropdownFade 0.16s;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-menu.active .dropdown-menu {
+    display: block;
+}
+
+.logout-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background 0.2s, color 0.18s;
+    cursor: pointer;
+}
+
+.logout-item:hover {
+    background: #f7f7f7;
+    color: #ef3e36;
+}
+
+/* ======= DASHBOARD ======= */
+main {
+    margin: 0;
+}
+
+.dashboard-section {
+    background: #f7f8fa;
+    min-height: 100vh;
+    padding: 42px 0 60px 0;
+}
+
+.dashboard-card {
+    background: #fff;
+    max-width: 1050px;
+    margin: 0 auto;
+    border-radius: 22px;
+    box-shadow: 0 4px 32px #0002;
+    padding: 38px 44px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #232323;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    background: #e9ecef;
+    color: #222;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background .15s, color .15s;
+}
+
+.btn.main-btn {
+    background: #1a73e8;
+    color: #fff;
+}
+
+.btn.main-btn:hover {
+    background: #0c5cc7;
+}
+
+.btn:hover:not(.main-btn) {
+    background: #dae0e6;
+}
+
+/* ======= JOB LIST TABLE ======= */
+.job-list-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    background: transparent;
+}
+
+th,
+td {
+    padding: 14px 10px;
+    border-bottom: 1.5px solid #f1f1f3;
+    font-size: 1rem;
+    text-align: left;
+    background: transparent;
+}
+
+th {
+    background: #f6f8fa;
+    color: #222;
+    font-size: 1.04rem;
+}
+
+td {
+    color: #444;
+}
+
+.action-btn {
+    border: none;
+    background: none;
+    font-size: 1.15rem;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 7px 9px;
+    transition: background .15s, color .15s;
+}
+
+.action-btn.edit {
+    color: #1a73e8;
+}
+
+.action-btn.delete {
+    color: #fa5252;
+}
+
+.action-btn.applicants {
+    color: #24bb78;
+}
+
+.action-btn:hover {
+    background: #f1f5fb;
+}
+
+/* ======= MODAL ======= */
+.modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(52, 61, 80, 0.10);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 36px 30px 24px 30px;
+    border-radius: 18px;
+    min-width: 360px;
+    min-height: 120px;
+    box-shadow: 0 6px 32px #0002;
+    position: relative;
+    max-width: 430px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    font-size: 1.55rem;
+    color: #aaa;
+    cursor: pointer;
+    transition: color .15s;
+}
+
+.close-modal:hover {
+    color: #222;
+}
+
+label {
+    display: block;
+    margin-top: 13px;
+    font-weight: 500;
+    color: #232323;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 7px;
+    border: 1.4px solid #e0e0e0;
+    margin-top: 2px;
+    font-size: 1rem;
+    background: #fafbfc;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.modal-btn-group {
+    margin-top: 18px;
+    text-align: right;
+}
+
+.applicant-table th,
+.applicant-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.applicant-table {
+    width: 100%;
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 900px) {
+    .dashboard-card {
+        padding: 12px;
+        max-width: 99vw;
+    }
+
+    .section-header h2 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .header-container,
+    .header-left,
+    .header-right {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .dashboard-card {
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .modal-content {
+        min-width: 90vw;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+}

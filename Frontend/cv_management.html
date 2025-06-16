@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Management</title>
+  <link rel="stylesheet" href="/assests/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <header class="topdev-header">
+    <div class="header-container">
+      <div class="header-left">
+        <a href="index.html" class="logo" id="homelogo">HCTT</a>
+        <nav class="main-nav">
+          <ul>
+            <li><a href="cv_management.html">CV Management</a></li>
+            <li><a href="applied_jobs.html">Applied Job</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="user-menu">
+        <div class="menu-toggle">
+          <img src="https://via.placeholder.com/30" alt="User Avatar" class="user-avatar">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="login.html" class="logout-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2><i class="fas fa-id-card"></i> Quản lý CV của bạn</h2>
+
+    <div id="candidate-info">
+      <p><strong>Họ tên:</strong> <span id="candidateName">Đang tải...</span></p>
+      <p><strong>Email:</strong> <span id="candidateEmail">Đang tải...</span></p>
+    </div>
+
+    <hr style="margin: 20px 0;">
+
+    <div class="cv-upload">
+      <input type="file" id="cvFile" accept=".pdf,.doc,.docx" style="display:none;" />
+      <button id="uploadBtn"><i class="fas fa-upload"></i> Tải lên hoặc thay thế CV</button>
+    </div>
+
+    <div id="current-cv-section">
+      <h4>CV hiện tại</h4>
+      <div id="cv-details">
+      </div>
+    </div>
+  </main>
+
+  <script src="/assests/js/cv.js"></script>
+</body>
+
+</html>

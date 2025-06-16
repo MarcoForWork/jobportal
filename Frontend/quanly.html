@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý tin tuyển dụng</title>
+    <link rel="stylesheet" href="./assests/css/quanly.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <header class="topdev-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="quanly.html" class="logo" id="homelogo">HCTT</a>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="candidate_management.html">Candidate Management</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="menu-toggle">
+                        <img src="https://via.placeholder.com/30" alt="User Avatar" class="user-avatar">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="login.html" class="logout-item">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section class="dashboard-section">
+            <div class="dashboard-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Quản lý tin tuyển dụng</h2>
+                    <button class="btn main-btn" onclick="openJobForm()">
+                        <i class="fas fa-plus"></i> Đăng tin mới
+                    </button>
+                </div>
+                <div class="job-list-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vị trí</th>
+                                <th>Công ty</th>
+                                <th>Lương</th>
+                                <th>Địa điểm</th>
+                                <th>Hạn nộp</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Đăng/Sửa tin -->
+    <div class="modal" id="jobModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeJobForm()">&times;</span>
+            <h3 id="modalTitle">Đăng tin tuyển dụng</h3>
+            <form id="jobForm" onsubmit="submitJobForm(event)">
+                <input type="hidden" id="jobId">
+                <label>Vị trí</label>
+                <input type="text" id="jobTitle" required>
+                <label>Công ty</label>
+                <input type="text" id="jobCompany" required>
+                <label>Lương</label>
+                <input type="text" id="jobSalary">
+                <label>Địa điểm</label>
+                <input type="text" id="jobLocation">
+                <label>Hạn nộp</label>
+                <input type="date" id="jobDeadline">
+                <label>Mô tả</label>
+                <textarea id="jobDesc" rows="3"></textarea>
+                <div class="modal-btn-group">
+                    <button type="submit" class="btn main-btn">Lưu tin</button>
+                    <button type="button" class="btn" onclick="closeJobForm()">Huỷ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Ứng viên -->
+    <div class="modal" id="applicantsModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeApplicantsModal()">&times;</span>
+            <h3>Danh sách ứng viên</h3>
+            <table class="applicant-table">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>CV</th>
+                    </tr>
+                </thead>
+                <tbody id="applicantList"></tbody>
+            </table>
+            <div class="modal-btn-group">
+                <button class="btn" onclick="closeApplicantsModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./assests/js/quanly.js"></script>
+</body>
+
+</html>

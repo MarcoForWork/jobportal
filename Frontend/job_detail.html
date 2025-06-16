@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết tin tuyển dụng</title>
+    <link rel="stylesheet" href="/assests/css/style.css" />
+    <link rel="stylesheet" href="apply-modal.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+
+<body>
+    <header class="topdev-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="index.html" class="logo" id="homelogo">HCTT</a>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="cv_management.html">CV Management</a></li>
+                        <li><a href="applied_jobs.html">Applied Job</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="user-menu">
+                <div class="menu-toggle">
+                    <img src="https://via.placeholder.com/30" alt="User Avatar" class="user-avatar" />
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="login.html" class="logout-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="job-detail-container">
+        <div class="job-header">
+            <div>
+                <h3>Ngân hàng TMCP Hàng Hải Việt Nam (MSB)</h3>
+                <h2>Trưởng nhóm Kiểm thử - MSB DF - 1M462</h2>
+                <p><i class="fas fa-map-marker-alt"></i> Quận 1, Hồ Chí Minh</p>
+            </div>
+            <div style="text-align: right;">
+                <button class="apply-now" onclick="openApplyModal()">Ứng tuyển ngay</button><br />
+            </div>
+        </div>
+
+        <div class="job-tags">
+            <span>Tester</span>
+            <span>Automation Tester</span>
+            <span>Manual Test</span>
+            <span>Automation QA</span>
+            <span>CI/CD</span>
+        </div>
+
+        <div class="job-meta">
+            <div><strong>Mức lương:</strong> Từ 5 triệu</div>
+            <div><strong>Cấp bậc:</strong> Trưởng Nhóm</div>
+            <div><strong>Hình thức:</strong> In Office</div>
+            <div><strong>Hợp đồng:</strong> Fulltime</div>
+        </div>
+
+        <hr style="margin: 30px 0" />
+
+        <div class="job-description">
+            <h3>📝 Trách nhiệm công việc</h3>
+            <ul>
+                <li>Phát triển và triển khai các chiến lược kiểm thử toàn diện...</li>
+                <li>Thiết kế, phát triển và duy trì các kịch bản kiểm thử tự động...</li>
+                <li>Tích hợp các bài kiểm thử vào pipeline CI/CD đảm bảo kiểm thử liên tục...</li>
+                <li>Đánh giá kết quả kiểm thử và làm việc chặt chẽ với nhóm phát triển để giải quyết lỗi...</li>
+                <li>Phối hợp với các nhóm QA, dev, PM nhằm tối ưu hóa chất lượng sản phẩm...</li>
+            </ul>
+        </div>
+
+        <div class="job-description">
+            <h3>🛠 Kỹ năng & Chuyên môn</h3>
+            <ul>
+                <li>5-7 năm kinh nghiệm trong kiểm thử phần mềm, tập trung vào kiểm thử tự động.</li>
+                <li>Thông thạo công cụ như Selenium, Playwright, JMeter, Postman...</li>
+                <li>Hiểu biết về CI/CD, Git, quy trình Agile.</li>
+                <li>Kỹ năng lãnh đạo nhóm và viết tài liệu kỹ thuật rõ ràng.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal ứng tuyển -->
+    <div id="applyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeApplyModal()">&times;</span>
+            <h2>Ứng tuyển vị trí: <span style="color: #e53935">Trưởng nhóm Kiểm thử - MSB DF - 1M462</span></h2>
+            <form>
+                <div class="form-group">
+                    <label for="fullName">Họ tên *</label>
+                    <input type="text" id="fullName" placeholder="Nhập họ tên..." required />
+                </div>
+                <div class="form-group">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="text" id="phone" placeholder="Nhập số điện thoại..." />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" placeholder="example@gmail.com" required />
+                </div>
+                <div class="form-group">
+                    <label>Chọn CV *</label>
+                    <select id="savedCV">
+                        <option value="">-- Chọn từ CV đã lưu --</option>
+                        <option value="cv1.pdf">CV Học tập - cv1.pdf</option>
+                        <option value="cv2.pdf">CV Kinh nghiệm - cv2.pdf</option>
+                        <!-- Dữ liệu này nên được render động từ JS hoặc backend -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Hoặc tải lên CV mới</label>
+                    <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" />
+                </div>
+
+                <div class="form-group">
+                    <label>Thư ứng tuyển</label>
+                    <textarea id="coverLetter" placeholder="Giới thiệu bản thân hoặc portfolio link..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeApplyModal()">Hủy</button>
+                    <button type="submit" class="submit">Gửi CV</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openApplyModal() {
+            document.getElementById("applyModal").style.display = "block";
+        }
+        function closeApplyModal() {
+            document.getElementById("applyModal").style.display = "none";
+        }
+        window.onclick = function (e) {
+            const modal = document.getElementById("applyModal");
+            if (e.target === modal) modal.style.display = "none";
+        };
+    </script>
+</body>
+
+</html>

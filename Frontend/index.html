@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Portal - TopDev Clone</title>
+    <link rel="stylesheet" href="./assests/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <header class="topdev-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="index.html" class="logo" id="homelogo">HCTT</a>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="cv_management.html">CV Management </a></li>
+                        <li><a href="applied_jobs.html">Applied Job</a></li>
+
+                    </ul>
+                </nav>
+            </div>
+            <div class="user-menu">
+                <div class="menu-toggle">
+                    <img src="https://via.placeholder.com/30" alt="User Avatar" class="user-avatar">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="login.html" class="logout-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    </header>
+
+    <main>
+
+        <section class="hot-jobs-section">
+            <div class="container">
+
+                <div class="search-box" style="margin: 0 auto 30px; max-width: 500px;">
+                    <input type="text" placeholder="Search..." id="headerSearchInput">
+                    <button onclick="searchJobs()"><i class="fas fa-search"></i></button>
+                </div>
+
+                <h2><i class="fas fa-fire hot-jobs-icon"></i> Super hot jobs today</h2>
+                <div class="hot-jobs-carousel">
+                    <div class="hot-jobs-grid">
+                        <div class="hot-job-card">
+                            <img src="https://via.placeholder.com/60x60?text=VN" alt="Vietnix Logo"
+                                class="hot-job-logo">
+                            <h3>Công Ty Cổ Phần Giải Pháp Và Công Nghệ...</h3>
+                            <p class="hot-job-title">System Admin (Linux)</p>
+                            <div class="hot-job-tags">
+                                <span class="hot-tag">Linux</span>
+                                <span class="hot-tag">SQL</span>
+                                <span class="hot-tag">System Admin</span>
+                            </div>
+                        </div>
+
+                        <div class="hot-job-card">
+                            <img src="https://via.placeholder.com/60x60?text=DAEU" alt="DAEU Logo" class="hot-job-logo">
+                            <h3>DAEU Nextier GDC Vietnam</h3>
+                            <p class="hot-job-title">Salesforce Developer</p>
+                            <div class="hot-job-tags">
+                                <span class="hot-tag">Salesforce</span>
+                                <span class="hot-tag">Apex</span>
+                                <span class="hot-tag">LWC</span>
+                            </div>
+                        </div>
+
+                        <div class="hot-job-card">
+                            <img src="https://via.placeholder.com/60x60?text=EA" alt="EAERA Logo" class="hot-job-logo">
+                            <h3>EAERA</h3>
+                            <p class="hot-job-title">Product Owner</p>
+                            <div class="hot-job-tags">
+                                <span class="hot-tag">Product Owner</span>
+                                <span class="hot-tag">Business Analyst</span>
+                                <span class="hot-tag">Azure</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-dots">
+                        <span class="carousel-dot active"></span>
+                        <span class="carousel-dot"></span>
+                        <span class="carousel-dot"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="popular-companies-section">
+            <div class="container">
+                <h2><i class="fas fa-star popular-companies-icon"></i> Popular Companies</h2>
+                <div class="company-grid">
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="MBBANK Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">DevOps Engineer - Khối công nghệ thông tin</h3>
+                            <p class="company-name">MBBANK</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Quận Cầu Giấy, Hà Nội</p>
+                            <div class="tags">
+                                <span class="tag">Agile</span>
+                                <span class="tag">Oracle SQL Server</span>
+                                <span class="tag">DevOps</span>
+                                <span class="tag">PostgreSQL</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="CommandOSS Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">Software Engineer...</h3>
+                            <p class="company-name">CommandOSS</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Quận 4, Hồ Chí Minh</p>
+                            <div class="tags">
+                                <span class="tag">ReactJS</span>
+                                <span class="tag">React Native</span>
+                                <span class="tag">Blockchain</span>
+                                <span class="tag">TypeScript</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="LIKELION Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">Back-end Developer</h3>
+                            <p class="company-name">CÔNG TY TNHH LIKELION</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Quận 7, Hồ Chí Minh</p>
+                            <div class="tags">
+                                <span class="tag">Java</span>
+                                <span class="tag">C#</span>
+                                <span class="tag">Python</span>
+                                <span class="tag">NodeJS</span>
+                                <span class="tag">Golang</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="HASKONING Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">Middle /Senior Full Stack Software Enginee...</h3>
+                            <p class="company-name">CÔNG TY TNHH HASKONING VIET NAM</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Thành phố Thủ Đức, Hồ Chí Minh</p>
+                            <div class="tags">
+                                <span class="tag">JavaScript</span>
+                                <span class="tag">Python</span>
+                                <span class="tag">Full-Stack</span>
+                                <span class="tag">VueJS</span>
+                                <span class="tag">React</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="BIDV Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">Chuyên viên Kiểm thử tự động (QC...</h3>
+                            <p class="company-name">BIDV - Ban Quản lý & Phát triển Corebanking</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Quận Hai Bà Trưng, Hà Nội</p>
+                            <div class="tags">
+                                <span class="tag">QC</span>
+                                <span class="tag">Tester</span>
+                                <span class="tag">Automation Tester</span>
+                                <span class="tag">Selenium</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="MSB Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">BUSINESS INTELLIGENCE EXPERT - MSB D...</h3>
+                            <p class="company-name">Ngân hàng TMCP Hàng Hải Việt Nam (MSB)</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Quận Đống Đa, Hà Nội</p>
+                            <div class="tags">
+                                <span class="tag">SQL</span>
+                                <span class="tag">Python</span>
+                                <span class="tag">Data Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="HEINEKEN Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">Product Owner (Sale)</h3>
+                            <p class="company-name">HEINEKEN Vietnam</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Quận 1, Hồ Chí Minh</p>
+                            <div class="tags">
+                                <span class="tag">Product Manager</span>
+                                <span class="tag">Product Owner</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="job_detail.html" style="text-decoration: none; color: inherit;">
+                        <div class="company-card">
+                            <div class="card-header">
+                                <img src="https://via.placeholder.com/40" alt="DaoukiWoom Logo" class="company-logo">
+                                <i class="far fa-bookmark bookmark-icon"></i>
+                            </div>
+                            <div class="card-body">
+                                <h3 class="job-title">Mobile Developer (JavaScript/ React Native)</h3>
+                                <p class="company-name">DaoukiWoom Innovation</p>
+                                <p class="salary">22.000.000 VNĐ to 45.000.000 VNĐ</p>
+                                <p class="location">Quận Bình Thạnh, Hồ Chí Minh</p>
+                                <div class="tags">
+                                    <span class="tag">Android</span>
+                                    <span class="tag">iOS</span>
+                                    <span class="tag">JavaScript</span>
+                                    <span class="tag">Mobile</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </a>
+
+                    <div class="company-card">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/40" alt="V-KEY Logo" class="company-logo">
+                            <i class="far fa-bookmark bookmark-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="job-title">(Senior or Lead) Security Researcher</h3>
+                            <p class="company-name">V-KEY</p>
+                            <p class="salary negotiable">Negotiable</p>
+                            <p class="location">Quận Tân Bình, Hồ Chí Minh</p>
+                            <div class="tags">
+                                <span class="tag">Linux</span>
+                                <span class="tag">Android</span>
+                                <span class="tag">iOS</span>
+                                <span class="tag">Security Engineer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pagination">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <i class="fas fa-arrow-right arrow-icon"></i>
+                </div>
+            </div>
+        </section>
+
+        <div id="jobList" class="job-list container">
+        </div>
+
+    </main>
+
+    <script src="./assests/js/scripts.js"></script>
+</body>
+
+</html>
