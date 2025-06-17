@@ -1,13 +1,13 @@
 package com.hctt.is208.repository;
 
-import com.hctt.is208.model.User;
-
 import java.util.Optional;
 
+import com.hctt.is208.model.File;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
-    Optional<User> findById(String id);
+public interface FileRepository extends JpaRepository<File, String> {
+    Optional<File> findByUserId(String userId);
+
 }

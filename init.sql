@@ -9,6 +9,7 @@ FLUSH PRIVILEGES;
 
 USE `jobportal`;
 
+
 CREATE TABLE `users` (
     `id` VARCHAR(255) PRIMARY KEY,
     `username` VARCHAR(255) UNIQUE NOT NULL,
@@ -25,6 +26,7 @@ CREATE TABLE `users` (
 --     dob DATE,
 --     address VARCHAR(255),
 --     cv_file_path VARCHAR(255),
+
 --     FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 -- );
 
@@ -65,4 +67,14 @@ CREATE TABLE `users` (
 --     FOREIGN KEY (job_post_id) REFERENCES job_posts(id) ON DELETE CASCADE,
 --     UNIQUE(candidate_id, job_post_id) 
 -- );
+
+CREATE TABLE `files` (
+    `id` VARCHAR(255) PRIMARY KEY,
+    `file_name` VARCHAR(255),
+    `file_path` VARCHAR(255),
+    `user_id` VARCHAR(255),
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 
