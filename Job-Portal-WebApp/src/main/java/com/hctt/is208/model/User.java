@@ -2,18 +2,22 @@ package com.hctt.is208.model;
 
 import java.sql.Date;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -35,4 +39,8 @@ public class User {
 
     @Column (name = "dob", nullable = true)
     private Date dob;
+
+    // File upload and download
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private File file;
 }
