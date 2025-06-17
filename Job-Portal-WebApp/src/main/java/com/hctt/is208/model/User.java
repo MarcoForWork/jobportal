@@ -35,4 +35,7 @@ public class User {
 
     @Column (name = "dob", nullable = true)
     private Date dob;
+
+    @Column(name = "role", nullable = false)
+    private String role;
 }
