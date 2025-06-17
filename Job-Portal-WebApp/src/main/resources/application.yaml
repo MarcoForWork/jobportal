@@ -26,3 +26,6 @@ server:
   port: 8080
   servlet:
     context-path: /jobportal
+
+jwt:
+  signerKey: "bfHUHsKlqkHWujMxhcqkAgQzYmrQ1atDEUQ/q751h+tZ/Q6zfl32svrxukVz787F"

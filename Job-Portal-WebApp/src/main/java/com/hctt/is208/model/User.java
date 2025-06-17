@@ -43,4 +43,6 @@ public class User {
     // File upload and download
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private File file;
+    @Column(name = "role", nullable = false)
+    private String role;
 }
