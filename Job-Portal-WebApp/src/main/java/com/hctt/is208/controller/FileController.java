@@ -41,7 +41,7 @@ public class FileController {
     @PostMapping("/upload/candidate/{userId}")
     public ResponseEntity<String> uploadFile (
             @RequestParam("file") MultipartFile file,
-            @RequestParam("userId") String userId
+            @PathVariable String userId
     ) throws IOException {
         // Kiểm tra user tồn tại
         User user = userRepository.findById(userId)
@@ -60,7 +60,7 @@ public class FileController {
             updateFile = existingFile.get();
             updateFile.setFileName(file.getOriginalFilename());
             updateFile.setFilePath(filePath);
-        } else {
+            fileRepository.save(updateFile);
             // Tạo mới nếu ứng viên lần đầu upload cv
             File newfile = new File();
             newfile.setFileName(userId);

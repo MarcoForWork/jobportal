@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f5f8fb;
+    padding: 20px;
+}
+
+.main-header h1 {
+    text-align: center;
+    color: #007bff;
+}
+
+.create-job {
+    background: white;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.create-job form input, .create-job form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.create-job form button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-job form button:hover {
+    background: #0056b3;
+}
+
+.job-list-section .job-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.job-list-section .job-item button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.job-list-section .job-item button:first-of-type {
+    background-color: #28a745;
+    color: white;
+}
+
+.job-list-section .job-item button:last-of-type {
+    background-color: #dc3545;
+    color: white;
+}

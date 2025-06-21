@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý CV Ứng viên</title>
+    <link rel="stylesheet" href="css/resume.css" />
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <header class="header">
+      <h1>Quản lý CV Ứng viên</h1>
+      <button id="logoutBtn" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </header>
+
+    <main class="container">
+      <section class="profile">
+        <h2>Thông tin ứng viên</h2>
+        <p><strong>Họ tên:</strong> <span id="candidateName"></span></p>
+        <p><strong>Email:</strong> <span id="candidateEmail"></span></p>
+      </section>
+
+      <section class="cv-section">
+        <h2>Hồ sơ CV</h2>
+        <div id="cv-details" class="cv-details">
+          <!-- Sẽ được load tự động từ JS -->
+        </div>
+
+        <input
+          type="file"
+          id="cvFile"
+          accept=".pdf,.doc,.docx"
+          style="display: none"
+        />
+        <button id="uploadBtn" class="upload-btn">
+          <i class="fas fa-upload"></i> Upload hoặc Thay thế CV
+        </button>
+      </section>
+    </main>
+
+    <script src="js/resume.js"></script>
+  </body>
+</html>

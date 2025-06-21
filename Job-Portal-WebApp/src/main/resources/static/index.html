@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Job Portal - Trang chủ</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="logo">JobPortal</div>
+      <nav class="main-nav">
+        <a href="/jobportal/index.html">Home</a>
+        <a href="/jobportal/jobs.html">Jobs</a>
+        <a href="/jobportal/resume.html">Upload CV</a>
+        <a href="/jobportal/login.html" id="loginLink">Login</a>
+        <a href="#" id="logoutLink" style="display: none">Logout</a>
+      </nav>
+    </header>
+
+    <!-- GLOBAL SEARCH BAR -->
+    <section class="global-search">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search jobs, skills, companies..."
+      />
+      <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
+    </section>
+
+    <main class="main-content">
+      <section class="hero">
+        <h1>Welcome to the Job Portal!</h1>
+        <p>Find your dream job and manage your profile easily.</p>
+        <a href="jobs.html" class="btn-primary">View Jobs</a>
+      </section>
+
+      <section class="latest-jobs">
+        <h2>Latest Jobs</h2>
+        <div id="jobList" class="job-list">
+          <!-- Jobs sẽ được load tự động từ JS hoặc API -->
+          <p>Loading jobs...</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="main-footer">
+      <p>&copy; 2025 Job Portal. All rights reserved.</p>
+    </footer>
+
+    <script>
+      // Đơn giản: check login state
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentUser = localStorage.getItem("currentUser");
+        if (currentUser) {
+          document.getElementById("loginLink").style.display = "none";
+          document.getElementById("logoutLink").style.display = "inline-block";
+        }
+
+        document
+          .getElementById("logoutLink")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            localStorage.removeItem("currentUser");
+            alert("You have been logged out.");
+            location.reload();
+          });
+
+        // Tạm thời: load mock job list
+        const jobList = document.getElementById("jobList");
+        jobList.innerHTML = `
+                <div class="job-item">
+                    <h3>Java Developer</h3>
+                    <p>Company: ABC Tech</p>
+                    <p>Location: Ho Chi Minh City</p>
+                </div>
+                <div class="job-item">
+                    <h3>Frontend React Developer</h3>
+                    <p>Company: XYZ Solutions</p>
+                    <p>Location: Remote</p>
+                </div>
+            `;
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentUser = localStorage.getItem("currentUser");
+        if (currentUser) {
+          document.getElementById("loginLink").style.display = "none";
+          document.getElementById("logoutLink").style.display = "inline-block";
+        }
+
+        document
+          .getElementById("logoutLink")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            localStorage.removeItem("currentUser");
+            alert("You have been logged out.");
+            location.reload();
+          });
+
+        const jobList = document.getElementById("jobList");
+
+        // Giả lập API jobs
+        let jobs = [
+          {
+            title: "Java Developer",
+            company: "ABC Tech",
+            location: "Ho Chi Minh City",
+          },
+          {
+            title: "Frontend React Developer",
+            company: "XYZ Solutions",
+            location: "Remote",
+          },
+          {
+            title: "Data Analyst",
+            company: "DEF Analytics",
+            location: "Hanoi",
+          },
+          {
+            title: "DevOps Engineer",
+            company: "Cloud Corp",
+            location: "Remote",
+          },
+        ];
+
+        // Call job api
+        fetch("/api/jobpostings")
+          .then((res) => res.json())
+          .then((data) => {
+            jobs = data;
+            displayJobs(jobs);
+          });
+
+        function displayJobs(filteredJobs) {
+          if (filteredJobs.length === 0) {
+            jobList.innerHTML = "<p>No jobs found.</p>";
+            return;
+          }
+          jobList.innerHTML = filteredJobs
+            .map(
+              (job) => `
+                <div class="job-item">
+                    <h3>${job.title}</h3>
+                    <p>Company: ${job.company}</p>
+                    <p>Location: ${job.location}</p>
+                </div>
+            `
+            )
+            .join("");
+        }
+
+        // Hiển thị toàn bộ ban đầu
+        displayJobs(jobs);
+
+        // Global Search
+        const searchInput = document.getElementById("searchInput");
+
+        let debounceTimeout = null;
+
+        function searchJobs() {
+          const keyword = searchInput.value.trim().toLowerCase();
+          const filtered = jobs.filter(
+            (job) =>
+              job.title.toLowerCase().includes(keyword) ||
+              job.company.toLowerCase().includes(keyword) ||
+              job.location.toLowerCase().includes(keyword)
+          );
+          displayJobs(filtered);
+        }
+
+        // Gõ vào input => search sau 500ms
+        searchInput.addEventListener("input", function () {
+          clearTimeout(debounceTimeout);
+          debounceTimeout = setTimeout(() => {
+            searchJobs();
+          }, 500);
+        });
+
+        // Bấm Enter cũng search
+        searchInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            clearTimeout(debounceTimeout);
+            searchJobs();
+          }
+        });
+
+        // Click nút cũng search
+        document
+          .getElementById("searchBtn")
+          .addEventListener("click", function () {
+            clearTimeout(debounceTimeout);
+            searchJobs();
+          });
+      });
+    </script>
+  </body>
+</html>

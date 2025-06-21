@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JobPostingResponse {
-    private Long jobId;
+    private int jobId;
     private Long companyId; // Chỉ gửi ID của công ty, không gửi toàn bộ object Company
     private String companyName; // Tên công ty để tiện hiển thị
     private String jobTitle;
