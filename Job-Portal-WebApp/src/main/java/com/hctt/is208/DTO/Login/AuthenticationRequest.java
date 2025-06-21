@@ -1,4 +1,4 @@
-package com.hctt.is208.DTO;
+package com.hctt.is208.DTO.Login;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

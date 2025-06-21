@@ -1,6 +1,6 @@
 package com.hctt.is208.controller;
 
-import com.hctt.is208.DTO.*;
+import com.hctt.is208.DTO.Login.*;
 import com.hctt.is208.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;

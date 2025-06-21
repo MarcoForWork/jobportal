@@ -1,4 +1,4 @@
-package com.hctt.is208.DTO;
+package com.hctt.is208.DTO.Login;
 
 public class IntrospectResponse {
     Boolean valid;

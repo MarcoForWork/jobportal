@@ -38,7 +38,7 @@ public class User {
     private String phone;
 
     @Column (name = "dob", nullable = true)
-    private Date dob;
+    private String dob;
 
     // File upload and download
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

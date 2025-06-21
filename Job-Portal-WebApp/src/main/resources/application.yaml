@@ -6,7 +6,7 @@ spring:
     name: JobPortalWebsite
 
   datasource:
-    url: jdbc:mysql://localhost:3306/jobportal
+    url: jdbc:mysql://localhost:3309/jobportal
     username: jobportal
     password: jobportal
 

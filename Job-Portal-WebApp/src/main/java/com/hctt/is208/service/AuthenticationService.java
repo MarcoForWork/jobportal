@@ -1,9 +1,9 @@
 package com.hctt.is208.service;
 
-import com.hctt.is208.DTO.AuthenticationRequest;
-import com.hctt.is208.DTO.AuthenticationResponse;
-import com.hctt.is208.DTO.IntrospectRequest;
-import com.hctt.is208.DTO.IntrospectResponse;
+import com.hctt.is208.DTO.Login.AuthenticationRequest;
+import com.hctt.is208.DTO.Login.AuthenticationResponse;
+import com.hctt.is208.DTO.Login.IntrospectRequest;
+import com.hctt.is208.DTO.Login.IntrospectResponse;
 import com.hctt.is208.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -51,7 +51,7 @@ public class AuthenticationService {
 
     //khúc này lấy password ra phải mã hoá lại 1 lần nữa, có thể không mã hoá cũng được nhưng mã hoá có vẻ hợp ly hon
     public AuthenticationResponse authenticate(AuthenticationRequest request){
-        var user = userRepository.findById(request.getUsername());
+        var user = userRepository.findByUsername(request.getUsername());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         //match
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.get().getPassword());
