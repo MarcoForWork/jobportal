@@ -16,6 +16,8 @@ import com.hctt.is208.repository.JobPostingRepository;
 import com.hctt.is208.repository.UserRepository;
 import com.hctt.is208.service.JobApplicationService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class JobApplicationServiceImpl implements JobApplicationService{
     @Autowired
@@ -30,7 +32,7 @@ public class JobApplicationServiceImpl implements JobApplicationService{
     @Override
     public void applyToJob(String userId, Long jobId) {
         Optional<JobApplicationDTO> existing = jobApplicationRepository.findByUserAndJobPostId(userId, jobId);
-        if (!existing.isPresent()) {
+        if (existing.isPresent()) {
             throw new RuntimeException("User already applied to this job");
         }
 
@@ -72,6 +74,7 @@ public class JobApplicationServiceImpl implements JobApplicationService{
     }
 
     @Override
+    @Transactional
     public void updateCandidateState(int applicationId, String state) {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                     .orElseThrow(() -> new RuntimeException("Job application not found"));

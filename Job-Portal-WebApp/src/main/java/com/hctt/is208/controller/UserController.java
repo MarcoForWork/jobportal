@@ -13,22 +13,22 @@ import com.hctt.is208.DTO.UserDTO;
 import com.hctt.is208.service.UserService;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO request) {
         userService.createUser(request);
         return ResponseEntity.ok(request);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deletUser(@PathVariable String id, @RequestBody UserDTO request) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletUser(@PathVariable String id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Delete user succesfully");
     }
     
 }

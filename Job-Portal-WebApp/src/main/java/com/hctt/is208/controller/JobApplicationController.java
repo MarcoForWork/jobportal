@@ -24,7 +24,7 @@ public class JobApplicationController {
     private JobApplicationService jobApplicationService;
 
     // Candidate
-    @GetMapping("/{userId}/my-applications")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<JobApplicationDTO>> listUserJobApplications (
         @PathVariable String userId
     ) {
@@ -51,7 +51,7 @@ public class JobApplicationController {
     }
 
     // Recruiter
-    @GetMapping("/job/{jobId}/candidates")
+    @GetMapping("/jobs/{jobId}/candidates")
     public ResponseEntity<List<JobApplicationDTO>> getCandidateByJobId (
         @PathVariable long jobId
     ) {
@@ -62,7 +62,7 @@ public class JobApplicationController {
     @PutMapping("/{applicationId}/state")
     public ResponseEntity<String> updateCandidateState (
         @PathVariable int applicationId,
-        @RequestParam String state
+        @RequestParam ("state") String state
     ) {
         jobApplicationService.updateCandidateState(applicationId, state);
         return ResponseEntity.ok("Candidate state updated!");
