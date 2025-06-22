@@ -38,10 +38,10 @@ public class FileController {
 
 
     // Upload file
-    @PostMapping("/upload/candidate/{userId}")
+    @PostMapping("/upload/{userId}")
     public ResponseEntity<String> uploadFile (
             @RequestParam("file") MultipartFile file,
-            @RequestParam("userId") String userId
+            @PathVariable String userId
     ) throws IOException {
         // Kiểm tra user tồn tại
         User user = userRepository.findById(userId)
@@ -52,14 +52,14 @@ public class FileController {
 
         // Kiểm tra user đã có cv chưa
         Optional<File> existingFile = fileRepository.findByUserId(userId);
-        File updateFile;
 
         // Lưu bản ghi
         if (existingFile.isPresent()){
             // Update bản ghi cũ nếu user đã có cv
-            updateFile = existingFile.get();
+            File updateFile = existingFile.get();
             updateFile.setFileName(file.getOriginalFilename());
             updateFile.setFilePath(filePath);
+            fileRepository.save(updateFile);
         } else {
             // Tạo mới nếu ứng viên lần đầu upload cv
             File newfile = new File();
@@ -73,7 +73,7 @@ public class FileController {
     }
 
     // Download file
-    @GetMapping("/download/candidate/{userId}")
+    @GetMapping("/download/{userId}")
     public ResponseEntity<Resource> downloadUserFile(@PathVariable String userId) {
         File fileEntity = fileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User chưa có file"));

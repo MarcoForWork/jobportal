@@ -1,6 +1,6 @@
 package com.hctt.is208.DTO;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,9 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
+    private String firstName;
+    private String lastName;
     private String phone;
-    private String dob;
+    private LocalDate dob;
     private String role;
 }

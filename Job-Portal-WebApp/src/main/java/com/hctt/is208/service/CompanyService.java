@@ -31,7 +31,7 @@ public class CompanyService {
         User owner = userRepository.findById(companyRequest.getOwnerUserId())
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + companyRequest.getOwnerUserId()));
 
-        if (owner.getRole() != "RECRUITER") {
+        if (!owner.getRole().equals("recruiter")) {
             throw new IllegalArgumentException("User with ID " + companyRequest.getOwnerUserId() + " is not a RECRUITER and cannot own a company.");
         }
 

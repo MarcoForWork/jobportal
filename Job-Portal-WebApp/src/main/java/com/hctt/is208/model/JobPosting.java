@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "job_postings")
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long jobId;
+    private int jobId;
 
     @ManyToOne(fetch = FetchType.LAZY) // Mối quan hệ Many-to-One với Company
     @JoinColumn(name = "company_id", nullable = false) // Tên cột khóa ngoại trong bảng job_postings
@@ -43,6 +43,10 @@ public class JobPosting {
 
     @Column(name = "is_active")
     private Boolean isActive;
+
+    // Join
+    @OneToMany(mappedBy = "jobPosting")
+    private List<JobApplication> jobApplication;
 
     // Constructors
     public JobPosting() {

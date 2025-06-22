@@ -1,6 +1,7 @@
 package com.hctt.is208.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -8,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -34,16 +36,26 @@ public class User {
     @Column (name = "password", nullable = false)
     private String password;
 
+    @Column (name = "first_name")
+    private String firstName;
+
+    @Column (name = "last_name")
+    private String lastName;
+
     @Column (name = "phone", nullable = false)
-    private String phone;
+    private String phone;    
 
-    @Column (name = "dob", nullable = true)
-    private String dob;
-
-    // File upload and download
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private File file;
-    
     @Column(name = "role", nullable = false)
     private String role;
+
+    @Column (name = "dob", nullable = true)
+    private LocalDate dob;
+
+    // Join table
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private File file;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<JobApplication> jobApplication;
+
 }
