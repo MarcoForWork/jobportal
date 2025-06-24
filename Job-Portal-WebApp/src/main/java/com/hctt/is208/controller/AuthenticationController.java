@@ -4,13 +4,12 @@ import com.hctt.is208.DTO.Login.*;
 import com.hctt.is208.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.text.ParseException;
 @RestController
 @RequestMapping("/user")
+@CrossOrigin("http://127.0.0.1:5501")
 public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;

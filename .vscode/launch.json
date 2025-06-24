@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-JobPortalWebsiteApplication<is208>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.hctt.is208.JobPortalWebsiteApplication",
+            "projectName": "is208",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

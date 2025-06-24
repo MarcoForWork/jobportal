@@ -112,13 +112,15 @@ public class CompanyService {
 
     // Helper method to map Company entity to CompanyResponse DTO
     private CompanyResponse mapToCompanyResponse(Company company) {
+        // Lombok sẽ tạo một constructor với thứ tự các trường được khai báo trong lớp DTO
+        // companyId, companyName, ownerUserId, industry, website, createdAt
         return new CompanyResponse(
                 company.getCompanyId(),
-                company.getOwner() != null ? company.getOwner().getId() : null, // THAY ĐỔI TẠI ĐÂY
-                company.getOwner() != null ? company.getOwner().getUsername() : null, // THAY ĐỔI TẠI ĐÂY
+                company.getCompanyName(), // Sửa lại cho đúng
+                company.getOwner() != null ? company.getOwner().getId() : null,
                 company.getIndustry(),
                 company.getWebsite(),
                 company.getCreatedAt()
         );
-    }
+}
 }

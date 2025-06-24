@@ -16,12 +16,11 @@ CREATE TABLE `users` (
     `first_name` VARCHAR(255),
     `last_name` VARCHAR(255),  
     `email` VARCHAR(255) UNIQUE NOT NULL,
-    `dob` DATE UNIQUE NOT NULL,
+    `dob` VARCHAR(255) ,
     `phone` VARCHAR(255),  
-    role ENUM('candidate', 'recruiter') NOT NULL,
+    role ENUM('candidate', 'recruiter', 'admin') NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE users MODIFY COLUMN dob VARCHAR(255);
 
 CREATE TABLE companies (
     company_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -43,6 +42,7 @@ CREATE TABLE job_postings (
     job_title VARCHAR(255) NOT NULL,
     salary_negotiable BOOLEAN DEFAULT TRUE,
     location VARCHAR(255),
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
     skills JSON, -- Để lưu trữ mảng các kỹ năng như SQL, ERP, Data Analytics
     posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Tự động cập nhật khi có thay đổi
@@ -54,7 +54,23 @@ CREATE TABLE job_postings (
         ON UPDATE CASCADE  -- Nếu company_id trong bảng companies thay đổi, company_id trong job_postings cũng thay đổi
 );
 
-ALTER TABLE job_postings DROP FOREIGN KEY job_postings_ibfk_1;
+CREATE TABLE `job_posting_details` (
+    `job_posting_id` INT NOT NULL,
+    `salary_description` VARCHAR(255) NULL,
+    `job_level` VARCHAR(255) NULL,
+    `work_format` VARCHAR(255) NULL,
+    `contract_type` VARCHAR(255) NULL,
+    `responsibilities` TEXT NULL,
+    `required_skills` TEXT NULL,
+    `benefits` TEXT NULL,
+    PRIMARY KEY (`job_posting_id`),
+
+    -- Sửa lỗi ở dòng dưới đây
+    CONSTRAINT `fk_details_to_job_postings`
+    FOREIGN KEY (`job_posting_id`)
+    REFERENCES `job_postings`(`job_id`) -- Phải là `job_postings` (số nhiều)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `job_applications` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -70,8 +86,8 @@ CREATE TABLE `job_applications` (
     FOREIGN KEY (user_id) REFERENCES users(id)
         ON DELETE CASCADE
 );
-
-
+DROP TABLE job_posting_details
+select * from job_posting_details
 CREATE TABLE `files` (
     `id` VARCHAR(255) PRIMARY KEY,
     `file_name` VARCHAR(255),
@@ -81,6 +97,13 @@ CREATE TABLE `files` (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+DROP TABLE files
+DROP TABLE job_applications
+DROP TABLE job_postings
+DROP TABLE companies
+DROP TABLE users
+select  * from companies
+    select  * from job_postings
 -- CREATE TABLE candidates (
 --     id VARCHAR(255) PRIMARY KEY,
 --     name VARCHAR(255) NOT NULL,

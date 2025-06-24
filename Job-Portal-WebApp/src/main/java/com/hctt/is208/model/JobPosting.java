@@ -1,5 +1,8 @@
 package com.hctt.is208.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,10 +17,13 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "jobId")
 public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int jobId;
+    private Long jobId;
 
     @ManyToOne(fetch = FetchType.LAZY) // Mối quan hệ Many-to-One với Company
     @JoinColumn(name = "company_id", nullable = false) // Tên cột khóa ngoại trong bảng job_postings
@@ -44,9 +50,16 @@ public class JobPosting {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "status", nullable = false)
+    private JobPostingStatus status;
+
     // Join
     @OneToMany(mappedBy = "jobPosting")
     private List<JobApplication> jobApplication;
+
+    @OneToOne(mappedBy = "jobPosting", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private JobPostingDetail jobPostingDetail;
+
 
     // Constructors
     public JobPosting() {

@@ -4,6 +4,7 @@ import com.hctt.is208.DTO.Login.AuthenticationRequest;
 import com.hctt.is208.DTO.Login.AuthenticationResponse;
 import com.hctt.is208.DTO.Login.IntrospectRequest;
 import com.hctt.is208.DTO.Login.IntrospectResponse;
+import com.hctt.is208.model.User;
 import com.hctt.is208.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -57,7 +58,7 @@ public class AuthenticationService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.get().getPassword());
         //kiểm tra xem có authenticated thành công hay không, cái này cần bổ xung
         //trong truong hop nay mac dinh la true
-        var token = generateToken(request.getUsername(), user.get().getRole());
+        var token = generateToken(request.getUsername(), user.get().getRole(), user.get().getId());
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
         authenticationResponse.setToken(token);
         authenticationResponse.setAuthenticated(authenticated);
@@ -65,11 +66,12 @@ public class AuthenticationService {
     }
 
     //generate token
-    private  String generateToken(String userName, String role){
+    private  String generateToken(String userName, String role, String id ){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         // payload
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(userName)
+                .claim("userId", id)
                 .claim("role", role)
                 .issuer("jobportal.com")
                 .issueTime(new Date())
