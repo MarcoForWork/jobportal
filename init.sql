@@ -16,7 +16,7 @@ CREATE TABLE `users` (
     `first_name` VARCHAR(255),
     `last_name` VARCHAR(255),  
     `email` VARCHAR(255) UNIQUE NOT NULL,
-    `dob` VARCHAR(255) ,
+    `dob` DATE NOT NULL,
     `phone` VARCHAR(255),  
     role ENUM('candidate', 'recruiter', 'admin') NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
