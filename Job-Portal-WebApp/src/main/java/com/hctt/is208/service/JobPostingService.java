@@ -4,6 +4,7 @@ import com.hctt.is208.DTO.JobPosting.JobPostingRequest;
 import com.hctt.is208.DTO.JobPosting.JobPostingResponse;
 import com.hctt.is208.model.Company;
 import com.hctt.is208.model.JobPosting;
+import com.hctt.is208.model.JobPostingStatus;
 import com.hctt.is208.repository.CompanyRepository;
 import com.hctt.is208.repository.JobPostingRepository;
 import jakarta.transaction.Transactional;
@@ -37,6 +38,7 @@ public class JobPostingService {
         jobPosting.setLocation(jobPostingRequest.getLocation());
         jobPosting.setSkills(jobPostingRequest.getSkills()); // Lưu JSON string
         jobPosting.setIsActive(jobPostingRequest.getIsActive());
+        jobPosting.setStatus(JobPostingStatus.PENDING);
 
         JobPosting savedJobPosting = jobPostingRepository.save(jobPosting);
         return mapToJobPostingResponse(savedJobPosting);
@@ -80,6 +82,32 @@ public class JobPostingService {
     }
 
     @Transactional
+    public JobPostingResponse updateStatus(Long id, JobPostingStatus newStatus) {
+        JobPosting jobPosting = jobPostingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Job Posting not found with id: " + id));
+
+        // Optional: Có thể thêm logic kiểm tra quyền của người dùng (phải là admin) ở đây
+
+        // Optional: Kiểm tra logic chuyển đổi trạng thái hợp lệ.
+        // Ví dụ: không thể duyệt một tin đã bị từ chối trước đó mà không qua bước PENDING lại.
+        if (newStatus == JobPostingStatus.PENDING) {
+            throw new IllegalArgumentException("Admin cannot change status back to PENDING.");
+        }
+
+        jobPosting.setStatus(newStatus);
+
+        // Khi duyệt tin (APPROVED), có thể tự động kích hoạt (setIsActive(true))
+        if (newStatus == JobPostingStatus.APPROVED) {
+            jobPosting.setIsActive(true);
+        } else if (newStatus == JobPostingStatus.REJECTED) {
+            jobPosting.setIsActive(false);
+        }
+
+        JobPosting updatedJobPosting = jobPostingRepository.save(jobPosting);
+        return mapToJobPostingResponse(updatedJobPosting);
+    }
+
+    @Transactional
     public void deleteJobPosting(Long id) {
         if (!jobPostingRepository.existsById(id)) {
             throw new RuntimeException("Job Posting not found with id: " + id);
@@ -91,12 +119,13 @@ public class JobPostingService {
     private JobPostingResponse mapToJobPostingResponse(JobPosting jobPosting) {
         return new JobPostingResponse(
                 jobPosting.getJobId(),
-                jobPosting.getCompany().getCompanyId(), // Lấy ID của công ty
-                jobPosting.getCompany().getCompanyName(), // Lấy tên công ty
+                jobPosting.getCompany().getCompanyId(),
+                jobPosting.getCompany().getCompanyName(),
                 jobPosting.getJobTitle(),
                 jobPosting.getSalaryNegotiable(),
                 jobPosting.getLocation(),
                 jobPosting.getSkills(),
+                jobPosting.getStatus(), // Đảm bảo DTO của bạn có trường status
                 jobPosting.getPostedDate(),
                 jobPosting.getUpdatedAt(),
                 jobPosting.getIsActive()

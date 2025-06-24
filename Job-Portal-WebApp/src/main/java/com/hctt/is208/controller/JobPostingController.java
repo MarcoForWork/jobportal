@@ -2,6 +2,7 @@ package com.hctt.is208.controller;
 
 import com.hctt.is208.DTO.JobPosting.JobPostingRequest;
 import com.hctt.is208.DTO.JobPosting.JobPostingResponse;
+import com.hctt.is208.DTO.JobPosting.UpdateStatusRequest;
 import com.hctt.is208.service.JobPostingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,19 @@ public class JobPostingController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) { // Catching more general RuntimeException for now
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/{id}/status")
+    // @PreAuthorize("hasRole('ADMIN')") // Dùng Spring Security để bảo vệ endpoint này
+    public ResponseEntity<JobPostingResponse> updateJobPostingStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateStatusRequest request) {
+        try {
+            JobPostingResponse updatedJobPosting = jobPostingService.updateStatus(id, request.getStatus());
+            return ResponseEntity.ok(updatedJobPosting);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build(); // Hoặc trả về message lỗi cụ thể
         }
     }
 }

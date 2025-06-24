@@ -7,19 +7,43 @@ togglePassword.addEventListener("click", () => {
     passwordInput.setAttribute("type", type === "password" ? "text" : "password");
 });
 
+/**
+ * Hàm giải mã chuỗi JWT để lấy payload.
+ * Lưu ý: Hàm này không xác minh chữ ký, chỉ giải mã.
+ * Việc xác minh phải được thực hiện ở backend.
+ * @param {string} token - Chuỗi JWT.
+ * @returns {object|null} - Payload của JWT hoặc null nếu có lỗi.
+ */
+function decodeJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error("Error decoding JWT:", e);
+        return null;
+    }
+}
+
 async function handleLogin(event) {
     event.preventDefault();
 
-    const username = usernameInput.value;
+    const username = usernameInput.value.trim();
     const password = passwordInput.value;
 
-    if (!username || password.length == 0) {
-        alert("Please enter valid credentials (password != 0 characters).");
+    if (!username || !password) {
+        alert("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
         return false;
     }
 
+    const API_URL = "http://localhost:8080/jobportal/user/auths";
+
     try {
-        const response = await fetch("http://localhost:8081/job_portal/api/auth/login", {
+        const response = await fetch(API_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -27,76 +51,53 @@ async function handleLogin(event) {
             body: JSON.stringify({ username, password })
         });
 
-        if (response.ok) {
-            window.location.href = "index.html";
-        } else {
-            const text = await response.text();
-            alert("Login failed: " + text);
-        }
-    } catch (error) {
-        console.error("Login error:", error);
-        alert("An error occurred. Please try again.");
-    }
+        const apiResponse = await response.json();
 
-    return false;
-}
-// ... (phần code đầu file giữ nguyên)
+        // --- BẮT ĐẦU PHẦN GỠ LỖI ---
+        console.log("1. DỮ LIỆU NHẬN ĐƯỢC TỪ BACKEND:", apiResponse);
 
-async function handleLogin(event) {
-    event.preventDefault();
-    const username = usernameInput.value;
-    const password = passwordInput.value;
+        if (apiResponse.code === 1000 && apiResponse.result && apiResponse.result.token) {
+            const token = apiResponse.result.token;
+            console.log("2. LẤY ĐƯỢC TOKEN:", token);
 
-    if (!username || !password) {
-        alert("Please enter both username and password.");
-        return false;
-    }
+            localStorage.setItem('authToken', token);
 
-    try {
-        const response = await fetch("http://localhost:8081/job_portal/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
+            const decodedToken = decodeJwt(token);
+            console.log("3. ĐÃ GIẢI MÃ TOKEN THÀNH PAYLOAD:", decodedToken);
 
-        if (response.ok) {
-            const userData = await response.json();
+            // Dòng debugger sẽ tạm dừng script tại đây nếu Developer Tools đang mở
+            debugger;
 
-            // --- BẮT ĐẦU PHẦN GỠ LỖI ---
-            console.log("1. Dữ liệu nhận được từ backend:", userData);
-
-            // Kiểm tra xem userData có hợp lệ không
-            if (!userData || !userData.id) {
-                alert("Lỗi: Dữ liệu người dùng từ server không hợp lệ!");
-                console.error("Dữ liệu không hợp lệ:", userData);
+            if (!decodedToken || !decodedToken.role) {
+                alert("Vai trò người dùng không xác định. (Lỗi tại bước kiểm tra role)");
+                console.error("Lỗi: decodedToken không hợp lệ hoặc không có thuộc tính 'role'.", decodedToken);
                 return;
             }
 
-            // Lưu vào localStorage
-            localStorage.setItem('currentUser', JSON.stringify(userData));
+            // Thêm .trim() để loại bỏ các khoảng trắng vô hình nếu có
+            const userRole = decodedToken.role.trim().toLowerCase();
+            console.log("4. VAI TRÒ NGƯỜI DÙNG CUỐI CÙNG:", userRole);
 
-            console.log("2. Đã lưu vào localStorage. Kiểm tra tab Application -> Local Storage.");
+            alert("Đăng nhập thành công! Chuẩn bị chuyển hướng...");
 
-            // Dòng debugger sẽ tạm dừng script, cho phép bạn kiểm tra
-            debugger;
-
-            // --- KẾT THÚC PHẦN GỠ LỖI ---
-
-            alert("Login successful! Chuẩn bị chuyển trang...");
-
-            const hasRecruiterRole = userData.roles.some(role => role.authority === 'RECRUITER');
-            if (hasRecruiterRole) {
-                window.location.href = "quanly.html";
-            } else {
+            if (userRole === 'admin') {
                 window.location.href = "index.html";
+            } else if (userRole === 'recruiter') {
+                window.location.href = "quanly.html";
+            } else if (userRole === 'candidate') {
+                window.location.href = "index.html";
+            } else {
+                alert("Vai trò người dùng không xác định.");
             }
+
         } else {
-            const text = await response.text();
-            alert("Login failed: " + text);
+            console.error("Backend không trả về token hoặc có lỗi:", apiResponse);
+            alert("Đăng nhập thất bại: " + apiResponse.message);
         }
     } catch (error) {
-        console.error("Login error:", error);
-        alert("An error occurred. Please try again.");
+        console.error("Lỗi đăng nhập:", error);
+        alert("Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.");
     }
+
     return false;
 }
