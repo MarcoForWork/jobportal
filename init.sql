@@ -86,8 +86,7 @@ CREATE TABLE `job_applications` (
     FOREIGN KEY (user_id) REFERENCES users(id)
         ON DELETE CASCADE
 );
-DROP TABLE job_posting_details
-select * from job_posting_details
+
 CREATE TABLE `files` (
     `id` VARCHAR(255) PRIMARY KEY,
     `file_name` VARCHAR(255),
@@ -97,13 +96,6 @@ CREATE TABLE `files` (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-DROP TABLE files
-DROP TABLE job_applications
-DROP TABLE job_postings
-DROP TABLE companies
-DROP TABLE users
-select  * from companies
-    select  * from job_postings
 -- CREATE TABLE candidates (
 --     id VARCHAR(255) PRIMARY KEY,
 --     name VARCHAR(255) NOT NULL,
