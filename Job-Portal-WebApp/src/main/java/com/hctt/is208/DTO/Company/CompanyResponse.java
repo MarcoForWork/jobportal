@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CompanyResponse {
-     Long companyId;
+     int companyId;
      String companyName;
      String ownerUserId;
      String industry;
      String website;
      LocalDateTime createdAt;
 
-     public CompanyResponse(Long companyId, String ownerUserId, String ownerUsername, String companyName, String industry, String website, LocalDateTime createdAt) {
+     public CompanyResponse(int companyId, String ownerUserId, String ownerUsername, String companyName, String industry, String website, LocalDateTime createdAt) {
           this.companyId = companyId;
           this.ownerUserId = ownerUserId;
           this.companyName = companyName;

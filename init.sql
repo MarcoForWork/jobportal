@@ -24,15 +24,14 @@ CREATE TABLE `users` (
 
 CREATE TABLE companies (
     company_id INT AUTO_INCREMENT PRIMARY KEY,
-    owner_user_id VARCHAR(255) UNIQUE NOT NULL, -- Khóa ngoại trỏ đến id của bảng users, UNIQUE để 1 recruiter chỉ quản lý 1 công ty
+    owner_user_id VARCHAR(255) UNIQUE NOT NULL,
     company_name VARCHAR(255) NOT NULL UNIQUE,
     industry VARCHAR(255),
     website VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Định nghĩa khóa ngoại
     FOREIGN KEY (owner_user_id) REFERENCES users(id)
-        ON DELETE RESTRICT -- Đã xóa comment nằm giữa dòng
+        ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 

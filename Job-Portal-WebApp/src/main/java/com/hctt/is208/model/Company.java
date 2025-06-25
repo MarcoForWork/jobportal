@@ -22,9 +22,9 @@ import java.util.Set;
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long companyId;
+    int companyId;
 
-    @OneToOne(fetch = FetchType.LAZY) // Có thể đổi thành EAGER nếu bạn luôn muốn tải thông tin owner cùng Company
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE) // Có thể đổi thành EAGER nếu bạn luôn muốn tải thông tin owner cùng Company
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id", nullable = false, unique = true)
     private User owner;
 

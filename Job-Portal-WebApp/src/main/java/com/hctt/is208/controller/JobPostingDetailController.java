@@ -24,7 +24,7 @@ public class JobPostingDetailController {
      * Sẽ trả về 200 OK với dữ liệu nếu tìm thấy, hoặc 404 Not Found nếu không.
      */
     @GetMapping
-    public ResponseEntity<JobPostingDetail> getJobPostingDetails(@PathVariable Long jobId) {
+    public ResponseEntity<JobPostingDetail> getJobPostingDetails(@PathVariable int jobId) {
         Optional<JobPostingDetail> details = jobPostingDetailService.findDetailsById(jobId);
         return details.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -36,7 +36,7 @@ public class JobPostingDetailController {
      */
     @PutMapping
     public ResponseEntity<JobPostingDetail> upsertJobPostingDetails(
-            @PathVariable Long jobId,
+            @PathVariable int jobId,
             @RequestBody JobPostingDetailRequest request) {
         try {
             JobPostingDetail savedDetails = jobPostingDetailService.saveOrUpdateDetails(jobId, request);

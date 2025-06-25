@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
-    List<JobPosting> findByCompanyCompanyId(Long companyId);
+public interface JobPostingRepository extends JpaRepository<JobPosting, Integer> {
+    List<JobPosting> findByCompanyCompanyId(int companyId);
     List<JobPosting> findByIsActiveTrue(); // Lấy các bài đăng đang hoạt động
     List<JobPosting> findByLocationContainingIgnoreCase(String location); // Tìm theo địa điểm
     List<JobPosting> findByJobTitleContainingIgnoreCase(String jobTitle); // Tìm theo tiêu đề công việc

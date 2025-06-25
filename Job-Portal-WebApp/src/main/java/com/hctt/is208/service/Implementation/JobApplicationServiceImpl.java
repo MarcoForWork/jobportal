@@ -30,7 +30,7 @@ public class JobApplicationServiceImpl implements JobApplicationService{
     private JobPostingRepository jobPostingRepository;
 
     @Override
-    public void applyToJob(String userId, Long jobId) {
+    public void applyToJob(String userId, int jobId) {
         Optional<JobApplicationDTO> existing = jobApplicationRepository.findByUserAndJobPostId(userId, jobId);
         if (existing.isPresent()) {
             throw new RuntimeException("User already applied to this job");
@@ -69,7 +69,7 @@ public class JobApplicationServiceImpl implements JobApplicationService{
     }
 
     @Override
-    public List<JobApplicationDTO> listCandidateOfJob(Long jobId) {
+    public List<JobApplicationDTO> listCandidateOfJob(int jobId) {
         return jobApplicationRepository.findByJobId(jobId);
     }
 

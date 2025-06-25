@@ -26,7 +26,7 @@ public class JobPostingDetailService {
      * @param jobPostingId ID của tin tuyển dụng.
      * @return một Optional chứa JobPostingDetail nếu tìm thấy.
      */
-    public Optional<JobPostingDetail> findDetailsById(Long jobPostingId) {
+    public Optional<JobPostingDetail> findDetailsById(int jobPostingId) {
         // findById hoạt động vì ID của JobPostingDetail chính là ID của JobPosting
         return jobPostingDetailRepository.findById(jobPostingId);
     }
@@ -38,7 +38,7 @@ public class JobPostingDetailService {
      * @return Đối tượng JobPostingDetail đã được lưu.
      */
     @Transactional
-    public JobPostingDetail saveOrUpdateDetails(Long jobPostingId, JobPostingDetailRequest request) {
+    public JobPostingDetail saveOrUpdateDetails(int jobPostingId, JobPostingDetailRequest request) {
         // Bước 1: Tìm JobPosting cha. Nếu không có, không thể thêm chi tiết.
         JobPosting jobPosting = jobPostingRepository.findById(jobPostingId)
                 .orElseThrow(() -> new RuntimeException("JobPosting not found with id: " + jobPostingId));
@@ -48,7 +48,7 @@ public class JobPostingDetailService {
                 .orElse(new JobPostingDetail());
 
         // Bước 3: Nếu là bản ghi mới, thiết lập ID và mối quan hệ
-        if (detail.getId() == null) {
+        if (detail.getId() == 0) {
             detail.setId(jobPostingId);
             detail.setJobPosting(jobPosting);
         }

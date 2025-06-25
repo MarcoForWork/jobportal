@@ -44,7 +44,7 @@ public class JobPostingService {
         return mapToJobPostingResponse(savedJobPosting);
     }
 
-    public Optional<JobPostingResponse> getJobPostingById(Long id) {
+    public Optional<JobPostingResponse> getJobPostingById(int id) {
         return jobPostingRepository.findById(id)
                 .map(this::mapToJobPostingResponse);
     }
@@ -55,14 +55,14 @@ public class JobPostingService {
                 .collect(Collectors.toList());
     }
 
-    public List<JobPostingResponse> getJobPostingsByCompanyId(Long companyId) {
+    public List<JobPostingResponse> getJobPostingsByCompanyId(int companyId) {
         return jobPostingRepository.findByCompanyCompanyId(companyId).stream()
                 .map(this::mapToJobPostingResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public JobPostingResponse updateJobPosting(Long id, JobPostingRequest jobPostingRequest) {
+    public JobPostingResponse updateJobPosting(int id, JobPostingRequest jobPostingRequest) {
         JobPosting existingJobPosting = jobPostingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job Posting not found with id: " + id));
 
@@ -82,7 +82,7 @@ public class JobPostingService {
     }
 
     @Transactional
-    public JobPostingResponse updateStatus(Long id, JobPostingStatus newStatus) {
+    public JobPostingResponse updateStatus(int id, JobPostingStatus newStatus) {
         JobPosting jobPosting = jobPostingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job Posting not found with id: " + id));
 
@@ -108,7 +108,7 @@ public class JobPostingService {
     }
 
     @Transactional
-    public void deleteJobPosting(Long id) {
+    public void deleteJobPosting(int id) {
         if (!jobPostingRepository.existsById(id)) {
             throw new RuntimeException("Job Posting not found with id: " + id);
         }

@@ -35,7 +35,7 @@ public class JobApplicationController {
     @PostMapping("/apply/{userId}/{jobId}")
     public ResponseEntity<String> applyJob (
         @PathVariable String userId,
-        @PathVariable Long jobId
+        @PathVariable int jobId
     ) {
         jobApplicationService.applyToJob(userId, jobId);
         return ResponseEntity.ok("Application submitted");
@@ -53,7 +53,7 @@ public class JobApplicationController {
     // Recruiter
     @GetMapping("/jobs/{jobId}/candidates")
     public ResponseEntity<List<JobApplicationDTO>> getCandidateByJobId (
-        @PathVariable long jobId
+        @PathVariable int jobId
     ) {
         List<JobApplicationDTO> candidates = jobApplicationService.listCandidateOfJob(jobId);
         return ResponseEntity.ok(candidates);

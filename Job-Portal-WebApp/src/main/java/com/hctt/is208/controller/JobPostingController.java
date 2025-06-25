@@ -33,7 +33,7 @@ public class JobPostingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobPostingResponse> getJobPostingById(@PathVariable Long id) {
+    public ResponseEntity<JobPostingResponse> getJobPostingById(@PathVariable int id) {
         return jobPostingService.getJobPostingById(id)
                 .map(jobPosting -> new ResponseEntity<>(jobPosting, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -46,7 +46,7 @@ public class JobPostingController {
     }
 
     @GetMapping("/company/{companyId}")
-    public ResponseEntity<List<JobPostingResponse>> getJobPostingsByCompany(@PathVariable Long companyId) {
+    public ResponseEntity<List<JobPostingResponse>> getJobPostingsByCompany(@PathVariable int companyId) {
         List<JobPostingResponse> jobPostings = jobPostingService.getJobPostingsByCompanyId(companyId);
         if (jobPostings.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content if no postings found for company
@@ -55,7 +55,7 @@ public class JobPostingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobPostingResponse> updateJobPosting(@PathVariable Long id, @Valid @RequestBody JobPostingRequest jobPostingRequest) {
+    public ResponseEntity<JobPostingResponse> updateJobPosting(@PathVariable int id, @Valid @RequestBody JobPostingRequest jobPostingRequest) {
         try {
             JobPostingResponse response = jobPostingService.updateJobPosting(id, jobPostingRequest);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -68,7 +68,7 @@ public class JobPostingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteJobPosting(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteJobPosting(@PathVariable int id) {
         try {
             jobPostingService.deleteJobPosting(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -80,7 +80,7 @@ public class JobPostingController {
     @PutMapping("/{id}/status")
     // @PreAuthorize("hasRole('ADMIN')") // Dùng Spring Security để bảo vệ endpoint này
     public ResponseEntity<JobPostingResponse> updateJobPostingStatus(
-            @PathVariable Long id,
+            @PathVariable int id,
             @RequestBody UpdateStatusRequest request) {
         try {
             JobPostingResponse updatedJobPosting = jobPostingService.updateStatus(id, request.getStatus());

@@ -21,7 +21,7 @@ import lombok.experimental.FieldDefaults;
         property = "id")
 public class JobPostingDetail {
     @Id // Khóa chính
-    private Long id;
+    private int id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

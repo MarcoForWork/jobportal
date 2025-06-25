@@ -1,7 +1,6 @@
 package com.hctt.is208.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -23,7 +22,7 @@ import java.util.List;
 public class JobPosting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long jobId;
+    private int jobId;
 
     @ManyToOne(fetch = FetchType.LAZY) // Mối quan hệ Many-to-One với Company
     @JoinColumn(name = "company_id", nullable = false) // Tên cột khóa ngoại trong bảng job_postings
