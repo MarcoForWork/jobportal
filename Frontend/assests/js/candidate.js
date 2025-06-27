@@ -2,6 +2,7 @@
 let currentUser = null;
 let userHasResume = false; // Thêm biến để kiểm tra trạng thái CV
 let selectedJobForDetail = null; // Biến để lưu trữ chi tiết công việc đang xem
+let userAppliedJobIds = new Set(); // Thêm Set để lưu trữ jobId của các công việc đã ứng tuyển
 
 // Đổi tên biến để dễ sử dụng hơn
 const API_BASE_URL = "http://localhost:8080/jobportal/api";
@@ -28,39 +29,8 @@ function decodeJwt(token) {
   }
 }
 
-/**
- * Hàm khởi tạo chính, được gọi khi trang tải xong.
- */
-async function initializeApp() {
-  const token = localStorage.getItem("authToken");
-  if (!token) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  const decodedToken = decodeJwt(token);
-  if (!decodedToken || !decodedToken.sub || !decodedToken.userId) {
-    logout("Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.");
-    return;
-  }
-
-  currentUser = { id: decodedToken.userId, username: decodedToken.sub };
-  document.getElementById("usernameDisplay").textContent = currentUser.username;
-
-  // Mở tab "Jobs" mặc định khi tải trang
-  const firstTab = document.querySelector('.tab-link[onclick*="Jobs"]');
-  if (firstTab) {
-    openCandidateTab(null, "Jobs");
-    firstTab.classList.add("active");
-  }
-
-  await checkUserResume(); // Kiểm tra CV ngay khi khởi tạo
-  await loadAllJobPostings(); // Tải danh sách công việc
-  await loadUserJobApplications(); // Tải đơn ứng tuyển
-}
-
 // =================================================================
-// ============== LOGIC HIỂN THỊ GIAO DIỆN CHÍNH =====================
+// ============== LOGIC HIỂN THỊ GIAO DIỆN CHÍNH (Helper functions first) =====
 // =================================================================
 
 function openCandidateTab(evt, tabName) {
@@ -85,27 +55,28 @@ function logout(message = "Bạn đã đăng xuất.") {
   window.location.href = "login.html";
 }
 
-// =================================================================
-// ==================== LOGIC QUẢN LÝ VIỆC LÀM ======================
-// =================================================================
+function closeJobDetailModal() {
+  document.getElementById("jobDetailModal").style.display = "none";
+  selectedJobForDetail = null; // Clear selected job
+}
 
-async function loadAllJobPostings() {
-  const token = localStorage.getItem("authToken");
+function formatJsonToList(jsonString) {
+  if (!jsonString) return "<li>N/A</li>";
   try {
-    const response = await fetch(`${API_BASE_URL}/jobpostings`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-cache",
-    });
-    if (!response.ok) throw new Error("Không thể tải danh sách việc làm.");
-    const jobs = await response.json();
-    renderJobCards(jobs);
-  } catch (error) {
-    console.error("Lỗi tải danh sách việc làm:", error);
-    document.getElementById(
-      "jobListings"
-    ).innerHTML = `<p style="text-align:center;color:red;">Lỗi tải dữ liệu: ${error.message}</p>`;
+    const items = JSON.parse(jsonString);
+    if (Array.isArray(items) && items.length > 0) {
+      return items.map((item) => `<li>${item}</li>`).join("");
+    }
+    return "<li>N/A</li>";
+  } catch (e) {
+    console.error("Error parsing JSON string:", e);
+    return `<li>${jsonString}</li>`; // Return as-is if not valid JSON
   }
 }
+
+// =================================================================
+// ==================== LOGIC QUẢN LÝ VIỆC LÀM (called by initializeApp) ====
+// =================================================================
 
 function renderJobCards(jobs) {
   const container = document.getElementById("jobListings");
@@ -118,9 +89,7 @@ function renderJobCards(jobs) {
       (job) => `
       <div class="job-card" onclick="showJobDetail(${job.jobId})">
         <h3>${job.jobTitle}</h3>
-        <p class="company-name">${
-          job.company ? job.company.companyName : "N/A"
-        }</p>
+        <p class="company-name">${job.companyName ? job.companyName : "N/A"}</p>
         <p class="location"><i class="fas fa-map-marker-alt"></i> ${
           job.location
         }</p>
@@ -204,25 +173,6 @@ async function showJobDetail(jobId) {
   }
 }
 
-function closeJobDetailModal() {
-  document.getElementById("jobDetailModal").style.display = "none";
-  selectedJobForDetail = null; // Clear selected job
-}
-
-function formatJsonToList(jsonString) {
-  if (!jsonString) return "<li>N/A</li>";
-  try {
-    const items = JSON.parse(jsonString);
-    if (Array.isArray(items) && items.length > 0) {
-      return items.map((item) => `<li>${item}</li>`).join("");
-    }
-    return "<li>N/A</li>";
-  } catch (e) {
-    console.error("Error parsing JSON string:", e);
-    return `<li>${jsonString}</li>`; // Return as-is if not valid JSON
-  }
-}
-
 async function applyToJob() {
   if (!currentUser || !selectedJobForDetail) {
     alert("Lỗi: Không có thông tin người dùng hoặc công việc.");
@@ -264,7 +214,8 @@ async function applyToJob() {
     if (response.ok) {
       alert("Bạn đã ứng tuyển thành công!");
       closeJobDetailModal(); // Đóng modal
-      await loadUserJobApplications(); // Tải lại danh sách đơn ứng tuyển
+      await loadUserJobApplications(); // Tải lại danh sách đơn ứng tuyển để cập nhật userAppliedJobIds
+      await loadAllJobPostings(); // Tải lại danh sách việc làm để ẩn các công việc đã ứng tuyển
       openCandidateTab(null, "MyApplications"); // Chuyển sang tab đơn ứng tuyển
       const myApplicationsTabButton = document.querySelector(
         '.tab-link[onclick*="MyApplications"]'
@@ -286,7 +237,7 @@ async function applyToJob() {
 }
 
 // =================================================================
-// ==================== LOGIC QUẢN LÝ CV ============================
+// ==================== LOGIC QUẢN LÝ CV (called by initializeApp) ====
 // =================================================================
 
 async function checkUserResume() {
@@ -330,79 +281,9 @@ async function checkUserResume() {
   }
 }
 
-document
-  .getElementById("resumeUploadForm")
-  .addEventListener("submit", async function (event) {
-    event.preventDefault();
-    if (!currentUser) {
-      alert("Lỗi: Không tìm thấy thông tin người dùng.");
-      return;
-    }
-
-    const resumeFile = document.getElementById("resumeFile").files[0];
-    if (!resumeFile) {
-      alert("Vui lòng chọn một tệp CV để tải lên.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", resumeFile);
-
-    const token = localStorage.getItem("authToken");
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/files/upload/${currentUser.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        alert("CV của bạn đã được tải lên/cập nhật thành công!");
-        await checkUserResume(); // Cập nhật trạng thái CV sau khi tải lên
-        document.getElementById("resumeUploadForm").reset(); // Reset form
-      } else {
-        throw new Error(
-          (await response.text()) || "Lỗi không xác định khi tải CV."
-        );
-      }
-    } catch (error) {
-      alert("Không thể tải CV lên: " + error.message);
-      console.error("Lỗi tải CV:", error);
-    }
-  });
-
 // =================================================================
-// ==================== LOGIC QUẢN LÝ ĐƠN ỨNG TUYỂN ==================
+// ==================== LOGIC QUẢN LÝ ĐƠN ỨNG TUYỂN (called by initializeApp) ====
 // =================================================================
-
-async function loadUserJobApplications() {
-  if (!currentUser) return;
-  const token = localStorage.getItem("authToken");
-  const tbody = document.getElementById("applicationList");
-  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#888;">Đang tải đơn ứng tuyển...</td></tr>`;
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/job-applications/${currentUser.id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-cache",
-      }
-    );
-    if (!response.ok) throw new Error("Không thể tải đơn ứng tuyển.");
-    const applications = await response.json();
-    renderApplications(applications);
-  } catch (error) {
-    console.error("Lỗi tải đơn ứng tuyển:", error);
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
-  }
-}
 
 function renderApplications(applications) {
   const tbody = document.getElementById("applicationList");
@@ -437,6 +318,39 @@ function renderApplications(applications) {
     .join("");
 }
 
+async function loadUserJobApplications() {
+  if (!currentUser) return;
+  const token = localStorage.getItem("authToken");
+  const tbody = document.getElementById("applicationList");
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#888;">Đang tải đơn ứng tuyển...</td></tr>`;
+  userAppliedJobIds.clear(); // Xóa các jobId đã lưu trước đó
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/job-applications/${currentUser.id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-cache",
+      }
+    );
+    if (!response.ok) throw new Error("Không thể tải đơn ứng tuyển.");
+    const applications = await response.json();
+
+    // Lưu trữ các jobId mà người dùng đã ứng tuyển vào Set
+    applications.forEach((app) => {
+      // CORRECTION HERE (as identified in previous turn): Use app.jobId directly
+      if (app.jobId) {
+        userAppliedJobIds.add(app.jobId);
+      }
+    });
+
+    renderApplications(applications);
+  } catch (error) {
+    console.error("Lỗi tải đơn ứng tuyển:", error);
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
+  }
+}
+
 async function removeJobApplication(applicationId) {
   if (!currentUser) {
     alert("Lỗi: Không có thông tin người dùng.");
@@ -462,7 +376,8 @@ async function removeJobApplication(applicationId) {
 
     if (response.ok) {
       alert("Đơn ứng tuyển đã được xóa thành công.");
-      await loadUserJobApplications(); // Tải lại danh sách
+      await loadUserJobApplications(); // Tải lại danh sách đơn ứng tuyển để cập nhật userAppliedJobIds
+      await loadAllJobPostings(); // Tải lại danh sách việc làm để hiển thị lại công việc nếu cần
     } else {
       throw new Error(
         (await response.text()) || "Lỗi không xác định khi xóa đơn ứng tuyển."
@@ -472,6 +387,69 @@ async function removeJobApplication(applicationId) {
     alert("Không thể xóa đơn ứng tuyển: " + error.message);
     console.error("Lỗi xóa đơn ứng tuyển:", error);
   }
+}
+
+// Ensure loadAllJobPostings is defined after loadUserJobApplications
+// as it depends on userAppliedJobIds being populated
+async function loadAllJobPostings() {
+  const token = localStorage.getItem("authToken");
+  try {
+    const response = await fetch(`${API_BASE_URL}/jobpostings`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-cache",
+    });
+    if (!response.ok) throw new Error("Không thể tải danh sách việc làm.");
+    const jobs = await response.json();
+
+    // Lọc các công việc đã được apply và các công việc không active
+    const jobsToDisplay = jobs.filter((job) => {
+      const isActiveValue = job.isActive;
+      // Chỉ hiển thị nếu công việc active VÀ người dùng chưa ứng tuyển
+      return (
+        (isActiveValue === true || isActiveValue === 1) &&
+        !userAppliedJobIds.has(job.jobId)
+      );
+    });
+
+    renderJobCards(jobsToDisplay);
+  } catch (error) {
+    console.error("Lỗi tải danh sách việc làm:", error);
+    document.getElementById(
+      "jobListings"
+    ).innerHTML = `<p style="text-align:center;color:red;">Lỗi tải dữ liệu: ${error.message}</p>`;
+  }
+}
+
+/**
+ * Hàm khởi tạo chính, được gọi khi trang tải xong.
+ * This should be defined AFTER all functions it calls.
+ */
+async function initializeApp() {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const decodedToken = decodeJwt(token);
+  if (!decodedToken || !decodedToken.sub || !decodedToken.userId) {
+    logout("Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.");
+    return;
+  }
+
+  currentUser = { id: decodedToken.userId, username: decodedToken.sub };
+  document.getElementById("usernameDisplay").textContent = currentUser.username;
+
+  // Mở tab "Jobs" mặc định khi tải trang
+  const firstTab = document.querySelector('.tab-link[onclick*="Jobs"]');
+  if (firstTab) {
+    openCandidateTab(null, "Jobs");
+    firstTab.classList.add("active");
+  }
+
+  await checkUserResume(); // Kiểm tra CV ngay khi khởi tạo
+  await loadUserJobApplications(); // Tải đơn ứng tuyển trước để có danh sách các jobId đã ứng tuyển
+  await loadAllJobPostings(); // Tải danh sách công việc
 }
 
 // Khởi tạo ứng dụng khi DOM đã sẵn sàng

@@ -25,9 +25,11 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     // Dùng constructor (id, applyDate, state, jobPosting, user)
     @Query(
-        "SELECT new com.hctt.is208.DTO.JobApplicationDTO(ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state) " +
+        "SELECT new com.hctt.is208.DTO.JobApplicationDTO(" +
+        "ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state, u.id, jp.jobId) " +
         "FROM JobApplication ja " +
         "JOIN ja.jobPosting jp " +
+        "JOIN jp.company c " +
         "JOIN ja.user u " +
         "WHERE ja.user.id = :userId"
     )
@@ -35,10 +37,12 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     // Dùng constructor (id, jobTitle, companyName, applyDate, state)
     @Query(
-        "SELECT new com.hctt.is208.DTO.JobApplicationDTO(ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state) " +
+        "SELECT new com.hctt.is208.DTO.JobApplicationDTO(" +
+        "ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state, u.id, jp.jobId) " +
         "FROM JobApplication ja " +
         "JOIN ja.jobPosting jp " +
         "JOIN jp.company c " +
+        "JOIN ja.user u " +
         "WHERE ja.user.id = :userId AND ja.state = :state"
     )
     List<JobApplicationDTO> findByUserAndState(@Param("userId") String userId, @Param("state") JobApplication.State state);
