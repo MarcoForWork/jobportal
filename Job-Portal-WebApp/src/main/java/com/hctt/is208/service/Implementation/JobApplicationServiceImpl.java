@@ -82,13 +82,13 @@ public class JobApplicationServiceImpl implements JobApplicationService{
     @Transactional
     public void updateCandidateState(int applicationId, String state) {
         JobApplication application = jobApplicationRepository.findById(applicationId)
-                    .orElseThrow(() -> new RuntimeException("Job application not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Job application with ID " + applicationId + " not found"));
         try {
             JobApplication.State newState = JobApplication.State.valueOf(state);
             application.setState(newState);
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid state");
+            jobApplicationRepository.save(application);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid state value: " + state);
         }
     }
     

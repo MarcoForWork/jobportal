@@ -13,7 +13,6 @@ import com.hctt.is208.model.JobApplication;
 
 @Repository
 public interface JobApplicationRepository extends JpaRepository<JobApplication, Integer> {
-    // Dùng constructor (id, applyDate, state, jobPosting, user)
     @Query(
         "SELECT new com.hctt.is208.DTO.JobApplicationDTO(ja.id, ja.applyDate, ja.state, jp, u) " +
         "FROM JobApplication ja " +
@@ -23,7 +22,6 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     )
     Optional<JobApplicationDTO> findByJobApplicationId(@Param("jobApplicationId") int jobApplicationId);
 
-    // Dùng constructor (id, applyDate, state, jobPosting, user)
     @Query(
         "SELECT new com.hctt.is208.DTO.JobApplicationDTO(" +
         "ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state, u.id, jp.jobId) " +
@@ -35,7 +33,6 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     )
     List<JobApplicationDTO> findByUserId(@Param("userId") String userId);
 
-    // Dùng constructor (id, jobTitle, companyName, applyDate, state)
     @Query(
         "SELECT new com.hctt.is208.DTO.JobApplicationDTO(" +
         "ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state, u.id, jp.jobId) " +

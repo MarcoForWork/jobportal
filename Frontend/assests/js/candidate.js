@@ -261,37 +261,11 @@ async function checkUserResume() {
 
       uploadedResumeDisplayElement.innerHTML = `
         <p>CV của bạn đã được tải lên.</p>
-        <button class="btn main-btn" id="viewResumeButton">
-          <i class="fas fa-eye"></i> Xem CV
-        </button>
         <a href="${API_BASE_URL}/files/download/${currentUser.id}" target="_blank" class="btn">
           <i class="fas fa-download"></i> Tải xuống CV
         </a>
         <div id="resumeViewer" style="margin-top: 20px; display: none;"></div>
       `;
-
-      // Improved View CV toggle logic
-      document
-        .getElementById("viewResumeButton")
-        .addEventListener("click", function () {
-          const resumeViewer = document.getElementById("resumeViewer");
-          const isVisible = resumeViewer.style.display === "block";
-
-          if (!isVisible) {
-            resumeViewer.innerHTML = `
-            <embed src="${API_BASE_URL}/files/download/${currentUser.id}" 
-                   type="application/pdf" width="100%" height="500px" />
-          `;
-          } else {
-            resumeViewer.innerHTML = "";
-          }
-
-          resumeViewer.style.display = isVisible ? "none" : "block";
-
-          this.innerHTML = isVisible
-            ? '<i class="fas fa-eye"></i> Xem CV'
-            : '<i class="fas fa-eye-slash"></i> Ẩn CV';
-        });
     } else if (response.status === 404) {
       userHasResume = false;
       resumeStatusElement.textContent =
