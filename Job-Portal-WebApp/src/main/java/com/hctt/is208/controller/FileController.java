@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.hctt.is208.DTO.FileDTO;
 import com.hctt.is208.model.File;
@@ -71,7 +72,7 @@ public class FileController {
         } else {
             // Tạo mới nếu ứng viên lần đầu upload cv
             File newfile = new File();
-            newfile.setFileName(userId);
+            newfile.setFileName(file.getOriginalFilename());
             newfile.setFilePath(filePath);
             newfile.setUser(user);
             fileRepository.save(newfile);
@@ -81,6 +82,7 @@ public class FileController {
     }
 
     // Download file
+    @CrossOrigin(origins = {"http://127.0.0.1:5501", "http://localhost:5501"})
     @GetMapping("/download/{userId}")
     public ResponseEntity<Resource> downloadUserFile(@PathVariable String userId) {
         File fileEntity = fileRepository.findByUserId(userId)
@@ -90,7 +92,8 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileEntity.getFileName() + "\"")
+                .header("Access-Control-Expose-Headers", "Content-Disposition")
                 .body(resource);
     }
 

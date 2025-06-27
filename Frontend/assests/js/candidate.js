@@ -30,7 +30,7 @@ function decodeJwt(token) {
 }
 
 // =================================================================
-// ============== LOGIC HIỂN THỊ GIAO DIỆN CHÍNH (Helper functions first) =====
+// ============== LOGIC HIỂN THỊ GIAO DIỆN CHÍNH ===================
 // =================================================================
 
 function openCandidateTab(evt, tabName) {
@@ -261,12 +261,69 @@ async function checkUserResume() {
 
       uploadedResumeDisplayElement.innerHTML = `
         <p>CV của bạn đã được tải lên.</p>
-        <a href="${API_BASE_URL}/files/download/${currentUser.id}" target="_blank" class="btn">
+        <button id="downloadResumeBtn" class="btn">
           <i class="fas fa-download"></i> Tải xuống CV
-        </a>
-        <div id="resumeViewer" style="margin-top: 20px; display: none;"></div>
+        </button>
+        <button id="viewResumeBtn" class="btn" style="margin-left: 10px;">
+          <i class="fas fa-eye"></i> Xem CV
+        </button>
+        <div id="resumeViewer" style="margin-top: 20px; display: none; text-align: center;"></div>
       `;
-    } else if (response.status === 404) {
+
+      // Thêm sự kiện cho nút tải xuống CV qua API
+      setTimeout(() => {
+        const downloadBtn = document.getElementById("downloadResumeBtn");
+        if (downloadBtn) {
+          downloadBtn.onclick = async function () {
+            const token = localStorage.getItem("authToken");
+            try {
+              const res = await fetch(`${API_BASE_URL}/files/download/${currentUser.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (!res.ok) throw new Error("Không thể tải file");
+              const blob = await res.blob();
+              // Lấy tên file từ header
+              let fileName = "cv.pdf";
+              const disposition = res.headers.get("Content-Disposition");
+              if (disposition && disposition.indexOf("filename=") !== -1) {
+                fileName = disposition.split("filename=")[1].replace(/['\"]/g, "").trim();
+              }
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = fileName;
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+                a.remove();
+              }, 100);
+            } catch (err) {
+              alert("Lỗi tải file: " + err.message);
+            }
+          };
+        }
+      }, 0);
+
+      // Thêm sự kiện cho nút Xem CV
+      setTimeout(() => {
+        const viewBtn = document.getElementById("viewResumeBtn");
+        const viewer = document.getElementById("resumeViewer");
+        if (viewBtn && viewer) {
+          viewBtn.onclick = function () {
+            if (viewer.style.display === "none") {
+              viewer.innerHTML = `<div style='display:inline-block;'><iframe src='${API_BASE_URL}/files/download/${currentUser.id}' width='800px' height='600px' style='border:1px solid #ccc; display:block; margin:auto;'></iframe></div>`;
+              viewer.style.display = "block";
+              viewBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Ẩn CV';
+            } else {
+              viewer.innerHTML = "";
+              viewer.style.display = "none";
+              viewBtn.innerHTML = '<i class="fas fa-eye"></i> Xem CV';
+            }
+          };
+        }
+      }, 0);
+    } else if (response.status === 500) {
       userHasResume = false;
       resumeStatusElement.textContent =
         "Bạn chưa tải CV nào lên. Vui lòng tải lên CV của bạn.";
@@ -477,4 +534,49 @@ document.addEventListener("DOMContentLoaded", function () {
       userMenu.classList.remove("active");
     }
   });
+});
+
+// Thêm event listener cho form upload CV
+
+document.addEventListener("DOMContentLoaded", function () {
+  const resumeUploadForm = document.getElementById("resumeUploadForm");
+  if (resumeUploadForm) {
+    resumeUploadForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const fileInput = document.getElementById("resumeFile");
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Vui lòng chọn file PDF để tải lên.");
+        return;
+      }
+      const file = fileInput.files[0];
+      if (file.type !== "application/pdf") {
+        alert("Chỉ chấp nhận file PDF!");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", file);
+      const token = localStorage.getItem("authToken");
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/files/upload/${currentUser.id}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            body: formData,
+          }
+        );
+        if (response.ok) {
+          alert("Tải CV thành công!");
+          await checkUserResume();
+        } else {
+          const errorText = await response.text();
+          alert("Lỗi khi tải CV: " + errorText);
+        }
+      } catch (error) {
+        alert("Lỗi khi tải CV: " + error.message);
+      }
+    });
+  }
 });
