@@ -79,8 +79,7 @@ async function fetchAndRenderJobPostings() {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        `HTTP error! Status: ${response.status}, Message: ${
-          errorData.message || "Unknown error"
+        `HTTP error! Status: ${response.status}, Message: ${errorData.message || "Unknown error"
         }`
       );
     }
@@ -177,39 +176,32 @@ function createJobCard(job, isHot = false) {
   const card = document.createElement("div");
   card.classList.add("company-card");
 
-  const companyLogoUrl = `https://placehold.co/40x40/e0e0e0/333333?text=${
-    job.companyName ? job.companyName.charAt(0).toUpperCase() : "?"
-  }`;
+  const companyLogoUrl = `https://placehold.co/40x40/e0e0e0/333333?text=${job.companyName ? job.companyName.charAt(0).toUpperCase() : "?"
+    }`;
 
   card.innerHTML = `
         <div class="card-header">
-            <img src="${companyLogoUrl}" alt="${
-    job.companyName || "Company"
-  } Logo" class="company-logo">
-            ${
-              isHot ? '<span class="hot-badge">HOT!</span>' : ""
-            } <!-- Conditional HOT! badge -->
+            <img src="${companyLogoUrl}" alt="${job.companyName || "Company"
+    } Logo" class="company-logo">
+            ${isHot ? '<span class="hot-badge">HOT!</span>' : ""
+    } <!-- Conditional HOT! badge -->
             <i class="far fa-bookmark bookmark-icon"></i>
         </div>
         <div class="card-body">
             <h3 class="job-title">${job.title || "Job Title Not Available"}</h3>
-            <p class="company-name">${
-              job.companyName || "Company Name Not Available"
-            }</p>
-            <p class="salary">${
-              job.salary ? `${job.salary} VNĐ` : "Negotiable"
-            }</p>
-            <p class="location"><i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i>${
-              job.location || "Location Not Available"
-            }</p>
+            <p class="company-name">${job.companyName || "Company Name Not Available"
+    }</p>
+            <p class="salary">${job.salary ? `${job.salary} VNĐ` : "Negotiable"
+    }</p>
+            <p class="location"><i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i>${job.location || "Location Not Available"
+    }</p>
             <div class="tags">
-                ${
-                  job.tags && job.tags.length > 0
-                    ? job.tags
-                        .map((tag) => `<span class="tag">${tag}</span>`)
-                        .join("")
-                    : '<span class="tag">No Tags</span>'
-                }
+                ${job.tags && job.tags.length > 0
+      ? job.tags
+        .map((tag) => `<span class="tag">${tag}</span>`)
+        .join("")
+      : '<span class="tag">No Tags</span>'
+    }
             </div>
         </div>
     `;

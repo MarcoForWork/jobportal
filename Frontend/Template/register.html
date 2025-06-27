@@ -1,113 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register - HCTT</title>
-    <link rel="stylesheet" href="/Frontend/assests/css/register.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <div class="logo">
-        <h1>HCTT</h1>
-        <p>Biggest job portal</p>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - HCTT</title>
+  <link rel="stylesheet" href="/assests/css/register.css" />
+</head>
 
-      <form class="register-box" onsubmit="return handleRegister(event)">
-        <h2>Create Your Account</h2>
-
-        <label for="username">Username</label>
-        <div class="input-group">
-          <input
-            type="text"
-            id="username"
-            placeholder="Enter your username"
-            required
-          />
-        </div>
-
-        <label for="email">Email</label>
-        <div class="input-group">
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter your email"
-            required
-          />
-        </div>
-
-        <label for="password">Password</label>
-        <div class="input-group">
-          <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            required
-          />
-          <span id="toggle-password" class="icon">👁</span>
-        </div>
-
-        <label for="confirm-password">Confirm Password</label>
-        <div class="input-group">
-          <input
-            type="password"
-            id="confirm-password"
-            placeholder="Confirm password"
-            required
-          />
-          <span id="toggle-confirm-password" class="icon">👁</span>
-        </div>
-
-        <label for="first-name">First Name</label>
-        <div class="input-group">
-          <input
-            type="text"
-            id="first-name"
-            placeholder="Enter your first name"
-            required
-          />
-        </div>
-
-        <label for="last-name">Last Name</label>
-        <div class="input-group">
-          <input
-            type="text"
-            id="last-name"
-            placeholder="Enter your last name"
-            required
-          />
-        </div>
-
-        <label for="phone">Phone Number</label>
-        <div class="input-group">
-          <input
-            type="tel"
-            id="phone"
-            placeholder="Enter your phone number"
-            required
-          />
-        </div>
-
-        <label for="dob">Date of Birth</label>
-        <div class="input-group">
-          <input type="date" id="dob" required />
-        </div>
-
-        <label for="role">Register As</label>
-        <div class="input-group">
-          <select id="role" required>
-            <option value="">Select Role</option>
-            <option value="candidate">Candidate</option>
-            <option value="recruiter">Recruiter</option>
-          </select>
-        </div>
-
-        <button type="submit">REGISTER</button>
-        <a href="login.html">Already have an account? Log In</a>
-      </form>
+<body>
+  <div class="container">
+    <div class="logo">
+      <h1>HCTT</h1>
+      <p>Biggest job portal</p>
     </div>
 
-    <script src="/Frontend/assests/js/register.js"></script>
-  </body>
+    <form class="register-box" onsubmit="return handleRegister(event)">
+      <h2>Create Your Account</h2>
+
+      <label for="username">Username</label>
+      <div class="input-group">
+        <input type="text" id="username" placeholder="Enter your username" required />
+      </div>
+
+      <label for="email">Email</label>
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Enter your email" required />
+      </div>
+
+      <label for="password">Password</label>
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Password" required />
+        <span id="toggle-password" class="icon">👁</span>
+      </div>
+
+      <label for="confirm-password">Confirm Password</label>
+      <div class="input-group">
+        <input type="password" id="confirm-password" placeholder="Confirm password" required />
+        <span id="toggle-confirm-password" class="icon">👁</span>
+      </div>
+
+      <label for="first-name">First Name</label>
+      <div class="input-group">
+        <input type="text" id="first-name" placeholder="Enter your first name" required />
+      </div>
+
+      <label for="last-name">Last Name</label>
+      <div class="input-group">
+        <input type="text" id="last-name" placeholder="Enter your last name" required />
+      </div>
+
+      <label for="phone">Phone Number</label>
+      <div class="input-group">
+        <input type="tel" id="phone" placeholder="Enter your phone number" required />
+      </div>
+
+      <label for="dob">Date of Birth</label>
+      <div class="input-group">
+        <input type="date" id="dob" required />
+      </div>
+
+      <label for="role">Register As</label>
+      <div class="input-group">
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option value="candidate">Candidate</option>
+          <option value="recruiter">Recruiter</option>
+        </select>
+      </div>
+
+      <button type="submit">REGISTER</button>
+      <a href="login.html">Already have an account? Log In</a>
+    </form>
+  </div>
+
+  <script src="/assests/js/register.js"></script>
+</body>
+
 </html>

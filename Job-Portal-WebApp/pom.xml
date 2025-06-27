@@ -98,6 +98,9 @@
 			<version>10.3</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-hibernate6 -->
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-hibernate6 -->
+
 	</dependencies>
 
 	<build>

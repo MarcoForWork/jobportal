@@ -51,4 +51,6 @@ public class JobPostingDetail {
     @Lob
     @Column(name = "benefits", columnDefinition = "TEXT")
     private String benefits;
+
+
 }

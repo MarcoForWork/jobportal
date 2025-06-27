@@ -95,11 +95,11 @@ async function handleLogin(event) {
       alert("Đăng nhập thành công! Chuẩn bị chuyển hướng...");
 
       if (userRole === "admin") {
-        window.location.href = "index.html";
+        window.location.href = "admin.html";
       } else if (userRole === "recruiter") {
         window.location.href = "quanly.html";
       } else if (userRole === "candidate") {
-        window.location.href = "candidate.html";
+        window.location.href = "index.html";
       } else {
         alert("Vai trò người dùng không xác định.");
       }

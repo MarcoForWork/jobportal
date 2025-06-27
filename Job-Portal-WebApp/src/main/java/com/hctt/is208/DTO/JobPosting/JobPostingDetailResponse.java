@@ -1,16 +1,10 @@
 package com.hctt.is208.DTO.JobPosting;
 
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
+
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class JobPostingDetailRequest {
+public class JobPostingDetailResponse {
+    private int id;
     private String salaryDescription;
     private String jobLevel;
     private String workFormat;
@@ -18,5 +12,6 @@ public class JobPostingDetailRequest {
     private String responsibilities;
     private String requiredSkills;
     private String benefits;
-
+    private String jobTitle;
+    private String companyName;
 }

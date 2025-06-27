@@ -39,6 +39,176 @@ body {
   font-weight: 700;
   color: #007bff;
   text-decoration: none;
+}
+
+/* === USER ACTIONS & MENU STYLES (NEW/UPDATED) === */
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-buttons-box {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 3px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f9f9f9;
+}
+
+.header-button {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 18px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 13px;
+}
+
+.login-button {
+  background-color: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.login-button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.register-button {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+}
+
+.register-button:hover {
+  background-color: #0056b3;
+}
+
+
+/* Styles for logged-in user menu (inspired by quanly.css) */
+.user-menu {
+  position: relative;
+}
+
+.menu-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.menu-toggle:hover {
+  background-color: #f1f1f1;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #e3e3e3;
+}
+
+#username-display {
+  font-weight: 500;
+}
+
+.menu-toggle .fa-chevron-down {
+  font-size: 0.8em;
+  color: #888;
+}
+
+.dropdown-menu {
+  display: none;
+  /* Hidden by default */
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  padding: 8px 0;
+  animation: dropdownFade 0.16s;
+}
+
+.user-menu.active .dropdown-menu {
+  display: block;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background 0.2s, color 0.18s;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f7f7f7;
+  color: #dc3545;
+}
+
+.dropdown-item i {
+  width: 16px;
+  text-align: center;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background-color: #f7f9fc;
+  line-height: 1.6;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.topdev-header {
+  background-color: #ffffff;
+  padding: 15px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.header-left .logo {
+  font-size: 28px;
+  font-weight: 700;
+  color: #007bff;
+  text-decoration: none;
   transition: color 0.3s ease;
 }
 

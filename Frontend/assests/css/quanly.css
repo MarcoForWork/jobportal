@@ -320,8 +320,6 @@ td {
     color: #845ef7;
 }
 
-/* Màu tím cho nút chi tiết */
-
 .action-btn:hover {
     background: #f1f5fb;
 }
@@ -356,11 +354,9 @@ td {
     justify-content: center;
     z-index: 9999;
     opacity: 0;
-    /* Bắt đầu ẩn */
     transition: opacity 0.25s ease;
 }
 
-/* Hiệu ứng khi modal hiển thị */
 .modal[style*="display: flex"] {
     opacity: 1;
 }
@@ -370,7 +366,6 @@ td {
     box-shadow: 0 6px 32px rgba(0, 0, 0, 0.1);
     position: relative;
     max-width: 450px;
-    /* Hiệu ứng khi modal hiển thị */
     transform: scale(0.95);
     opacity: 0;
     transition: transform 0.25s ease, opacity 0.25s ease;
@@ -381,7 +376,6 @@ td {
     opacity: 1;
 }
 
-/* --- MODAL CƠ BẢN --- */
 .modal-content:not(.large) {
     padding: 36px 30px 24px 30px;
     border-radius: 18px;
@@ -417,7 +411,7 @@ td {
     text-align: right;
 }
 
-/* --- MODAL CHI TIẾT (ĐÃ SỬA LỖI BỐ CỤC) --- */
+/* MODAL CHI TIẾT */
 .modal-content.large {
     max-width: 850px;
     width: 95%;
@@ -453,7 +447,6 @@ td {
 
 .modal-header .close-modal {
     position: static;
-    /* Ghi đè lại để nó nằm trong header */
     font-size: 1.7rem;
 }
 
@@ -476,7 +469,6 @@ td {
     gap: 10px;
 }
 
-/* Bố cục hàng ngang */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -484,7 +476,6 @@ td {
     margin-bottom: 20px;
 }
 
-/* Style cho label và input/textarea của modal chi tiết */
 #jobDetailForm label {
     display: block;
     margin-bottom: 8px;
@@ -565,4 +556,93 @@ td {
         width: 28px;
         height: 28px;
     }
+}
+
+
+/* ======= PHẦN CSS MỚI CHO TAB THÔNG TIN CÔNG TY ======= */
+/* LƯU Ý: Để các style này hoạt động đẹp nhất, bạn nên cập nhật lại file quanly.html
+   để nhóm mỗi cặp label và input vào trong một thẻ div. Ví dụ:
+   
+    <form id="editCompanyForm">
+        <div class="company-form-grid">
+            <div class="form-group">
+                <label for="editCompanyName">Tên công ty</label>
+                <input type="text" id="editCompanyName" required>
+            </div>
+            <!-- các cặp label/input khác -->
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn main-btn">Cập nhật thông tin</button>
+        </div>
+    </form>
+*/
+
+#CompanyInfo .section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+#editCompanyForm {
+    margin-top: 1.5rem;
+}
+
+/* Vùng chứa các trường nhập liệu */
+.company-form-grid {
+    display: grid;
+    /* Chia thành 3 cột trên màn hình lớn, tự động xuống hàng trên màn hình nhỏ */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    align-items: end;
+    /* Căn các item theo hàng dưới cùng */
+}
+
+/* Style cho từng nhóm label-input nếu được bọc trong .form-group */
+#editCompanyForm .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+#editCompanyForm label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-medium);
+    font-size: 0.95rem;
+}
+
+#editCompanyForm input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #dcdfe4;
+    font-size: 1rem;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+#editCompanyForm input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Style cho vùng chứa nút bấm */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    /* Đẩy nút về phía bên phải */
+    margin-top: 2rem;
+}
+
+/* Style lại cho nút bấm trong form này */
+.form-actions .btn.main-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+}
+
+/* Style lại cho .modal-btn-group nếu bạn không thay đổi HTML */
+#editCompanyForm .modal-btn-group {
+    text-align: right;
+    margin-top: 2rem;
 }

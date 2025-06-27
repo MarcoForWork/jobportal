@@ -1,5 +1,6 @@
 package com.hctt.is208.service;
 import com.hctt.is208.DTO.JobPosting.JobPostingDetailRequest;
+import com.hctt.is208.DTO.JobPosting.JobPostingDetailResponse;
 import com.hctt.is208.model.JobPosting;
 import com.hctt.is208.model.JobPostingDetail;
 import com.hctt.is208.repository.JobPostingDetailRepository;
@@ -15,54 +16,64 @@ public class JobPostingDetailService {
     private final JobPostingRepository jobPostingRepository;
     private final JobPostingDetailRepository jobPostingDetailRepository;
 
-    @Autowired
     public JobPostingDetailService(JobPostingRepository jobPostingRepository, JobPostingDetailRepository jobPostingDetailRepository) {
         this.jobPostingRepository = jobPostingRepository;
         this.jobPostingDetailRepository = jobPostingDetailRepository;
     }
 
-    /**
-     * Lấy thông tin chi tiết của một tin tuyển dụng.
-     * @param jobPostingId ID của tin tuyển dụng.
-     * @return một Optional chứa JobPostingDetail nếu tìm thấy.
-     */
-    public Optional<JobPostingDetail> findDetailsById(int jobPostingId) {
-        // findById hoạt động vì ID của JobPostingDetail chính là ID của JobPosting
-        return jobPostingDetailRepository.findById(jobPostingId);
+    @Transactional
+    public JobPostingDetailResponse saveOrUpdateDetails(int jobId, JobPostingDetailRequest request) { // Sửa kiểu trả về
+        JobPosting jobPosting = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("JobPosting not found with id: " + jobId));
+
+        JobPostingDetail detailToSave = jobPostingDetailRepository.findById(jobId)
+                .orElseGet(() -> {
+                    JobPostingDetail newDetail = new JobPostingDetail();
+                    newDetail.setJobPosting(jobPosting);
+                    return newDetail;
+                });
+
+        // Map dữ liệu từ request vào entity
+        detailToSave.setSalaryDescription(request.getSalaryDescription());
+        detailToSave.setJobLevel(request.getJobLevel());
+        detailToSave.setWorkFormat(request.getWorkFormat());
+        detailToSave.setContractType(request.getContractType());
+        detailToSave.setResponsibilities(request.getResponsibilities());
+        detailToSave.setRequiredSkills(request.getRequiredSkills());
+        detailToSave.setBenefits(request.getBenefits());
+
+        // Lưu entity vào DB
+        JobPostingDetail savedEntity = jobPostingDetailRepository.save(detailToSave);
+
+        // Map entity đã lưu sang DTO và trả về
+        return mapToDto(savedEntity);
     }
 
-    /**
-     * Tạo mới hoặc cập nhật thông tin chi tiết cho một tin tuyển dụng đã tồn tại.
-     * @param jobPostingId ID của tin tuyển dụng cha.
-     * @param request Dữ liệu chi tiết từ frontend.
-     * @return Đối tượng JobPostingDetail đã được lưu.
-     */
-    @Transactional
-    public JobPostingDetail saveOrUpdateDetails(int jobPostingId, JobPostingDetailRequest request) {
-        // Bước 1: Tìm JobPosting cha. Nếu không có, không thể thêm chi tiết.
-        JobPosting jobPosting = jobPostingRepository.findById(jobPostingId)
-                .orElseThrow(() -> new RuntimeException("JobPosting not found with id: " + jobPostingId));
+    // Tạo một phương thức private để tái sử dụng logic ánh xạ
+    private JobPostingDetailResponse mapToDto(JobPostingDetail entity) {
+        JobPostingDetailResponse dto = new JobPostingDetailResponse();
+        dto.setId(entity.getId());
+        dto.setSalaryDescription(entity.getSalaryDescription());
+        dto.setJobLevel(entity.getJobLevel());
+        dto.setWorkFormat(entity.getWorkFormat());
+        dto.setContractType(entity.getContractType());
+        dto.setResponsibilities(entity.getResponsibilities());
+        dto.setRequiredSkills(entity.getRequiredSkills());
+        dto.setBenefits(entity.getBenefits());
 
-        // Bước 2: Tìm chi tiết hiện có hoặc tạo mới nếu chưa có.
-        JobPostingDetail detail = jobPostingDetailRepository.findById(jobPostingId)
-                .orElse(new JobPostingDetail());
-
-        // Bước 3: Nếu là bản ghi mới, thiết lập ID và mối quan hệ
-        if (detail.getId() == 0) {
-            detail.setId(jobPostingId);
-            detail.setJobPosting(jobPosting);
+        // Truy cập an toàn các trường lazy-loaded vì đang ở trong transaction
+        if (entity.getJobPosting() != null) {
+            dto.setJobTitle(entity.getJobPosting().getJobTitle());
+            if (entity.getJobPosting().getCompany() != null) {
+                dto.setCompanyName(entity.getJobPosting().getCompany().getCompanyName());
+            }
         }
+        return dto;
+    }
 
-        // Bước 4: Ánh xạ dữ liệu từ request DTO vào entity 'detail'
-        detail.setSalaryDescription(request.getSalaryDescription());
-        detail.setJobLevel(request.getJobLevel());
-        detail.setWorkFormat(request.getWorkFormat());
-        detail.setContractType(request.getContractType());
-        detail.setResponsibilities(request.getResponsibilities());
-        detail.setRequiredSkills(request.getRequiredSkills());
-        detail.setBenefits(request.getBenefits());
-
-        // Bước 5: Lưu vào database. JPA sẽ tự động quyết định là INSERT hay UPDATE.
-        return jobPostingDetailRepository.save(detail);
+    // Bạn cũng nên cập nhật phương thức findDetailsById để trả về DTO
+    public Optional<JobPostingDetailResponse> findDetailsDtoById(int jobId) {
+        return jobPostingDetailRepository.findById(jobId)
+                .map(this::mapToDto); // Tái sử dụng mapper
     }
 }
