@@ -359,20 +359,16 @@ function renderApplications(applications) {
     .map(
       (app) => `
       <tr>
-        <td>${app.jobPosting ? app.jobPosting.jobTitle : "N/A"}</td>
+        <td>${app.jobTitle ? app.jobTitle : (app.jobPosting ? app.jobPosting.jobTitle : "N/A")}</td>
         <td>${
-          app.jobPosting && app.jobPosting.company
-            ? app.jobPosting.company.companyName
-            : "N/A"
+          app.companyName ? app.companyName : (app.jobPosting && app.jobPosting.company ? app.jobPosting.company.companyName : "N/A")
         }</td>
         <td>${new Date(app.applyDate).toLocaleDateString("vi-VN")}</td>
         <td><span class="status-${app.state.toLowerCase()}">${
         app.state
       }</span></td>
         <td>
-          <button class="btn delete-btn" onclick="removeJobApplication(${
-            app.id
-          })">
+          <button class="btn delete-btn" onclick="removeJobApplication(${app.id})">
             <i class="fas fa-trash"></i> Xóa
           </button>
         </td>
