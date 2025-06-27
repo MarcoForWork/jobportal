@@ -46,6 +46,6 @@ public class JobApplication {
     private State state;
 
     public enum State {
-        Pending, Accepted, Rejected
+        Pending, Accepted, ACCEPTED, REJECTED, Rejected
     }
 }

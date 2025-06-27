@@ -95,6 +95,22 @@ CREATE TABLE `files` (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE notifications (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id VARCHAR(255) NOT NULL,
+    message VARCHAR(500) NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    link VARCHAR(255) NULL,
+    PRIMARY KEY (id),
+    INDEX fk_notifications_user_idx (user_id ASC),
+    CONSTRAINT fk_notifications_user
+        FOREIGN KEY (user_id)
+        REFERENCES users (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
 -- CREATE TABLE candidates (
 --     id VARCHAR(255) PRIMARY KEY,
 --     name VARCHAR(255) NOT NULL,

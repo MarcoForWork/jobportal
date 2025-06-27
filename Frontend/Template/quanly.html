@@ -14,9 +14,6 @@
             <div class="header-left">
                 <a href="quanly.html" class="logo" id="homelogo">HCTT</a>
                 <nav class="main-nav">
-                    <ul>
-                        <li><a href="#">Candidate Management</a></li>
-                    </ul>
                 </nav>
             </div>
             <div class="header-right">
@@ -27,7 +24,7 @@
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="/Template/login.html" class="logout-item" onclick="logout()">
+                        <a href="#" class="logout-item" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
                     </div>
@@ -37,7 +34,6 @@
     </header>
 
     <main>
-        <!-- Giao diện tạo công ty, ban đầu sẽ bị ẩn -->
         <section id="createCompanySection" class="dashboard-section" style="display: none;">
             <div class="dashboard-card">
                 <div class="section-header">
@@ -59,21 +55,20 @@
             </div>
         </section>
 
-        <!-- Giao diện Dashboard quản lý (ban đầu ẩn) -->
         <section id="companyDashboardSection" class="dashboard-section" style="display: none;">
             <div class="dashboard-card">
-                <!-- Tab điều hướng -->
                 <div class="tabs">
-                    <button class="tab-link active" onclick="openTab(event, 'JobManagement')"><i
+                    <button class="tab-link active" onclick="openTab(event, 'JobManagement', this)"><i
                             class="fas fa-clipboard-list"></i> Quản lý tin tuyển dụng</button>
-                    <button class="tab-link" onclick="openTab(event, 'ApplicationManagement')"><i
+                    <button class="tab-link" onclick="openTab(event, 'ApplicationManagement', this)"><i
                             class="fas fa-file-alt"></i> Quản lý Đơn ứng tuyển</button>
-                    <button class="tab-link" onclick="openTab(event, 'CompanyInfo')"><i
+                    <button class="tab-link" onclick="openTab(event, 'CandidateManagement', this)"><i
+                            class="fas fa-user-check"></i> Quản lý Ứng viên</button>
+                    <button class="tab-link" onclick="openTab(event, 'CompanyInfo', this)"><i
                             class="fas fa-building-user"></i> Thông tin công ty</button>
                 </div>
 
-                <!-- Nội dung Tab: Quản lý tin tuyển dụng -->
-                <div id="JobManagement" class="tab-content" style="display: block;">
+                <div id="JobManagement" class="tab-content">
                     <div class="section-header">
                         <h2 id="managementTitle">Tin tuyển dụng</h2>
                         <button class="btn main-btn" onclick="openJobForm()">
@@ -97,40 +92,85 @@
                     </div>
                 </div>
 
-                <!-- Nội dung Tab: Quản lý Đơn ứng tuyển -->
-                <div id="ApplicationManagement" class="tab-content" style="display: none;">
+                <div id="ApplicationManagement" class="tab-content">
                     <div class="section-header">
                         <h2>Danh sách đơn ứng tuyển</h2>
                     </div>
-                    <div class="job-list-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Ứng viên</th>
-                                    <th>Vị trí ứng tuyển</th>
-                                    <th>Ngày nộp</th>
-                                    <th>Trạng thái</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="applicationList"></tbody>
-                        </table>
+                    <div class="application-management-layout">
+                        <div class="job-postings-list-container">
+                            <h4>Chọn một tin tuyển dụng</h4>
+                            <ul id="application-job-list"></ul>
+                        </div>
+                        <div class="candidate-list-view">
+                            <div id="candidate-list-placeholder">
+                                <i class="fas fa-arrow-left"></i>
+                                <p>Vui lòng chọn một tin tuyển dụng từ danh sách bên trái.</p>
+                            </div>
+                            <table style="display:none;">
+                                <thead>
+                                    <tr>
+                                        <th>Ứng viên</th>
+                                        <th>Ngày nộp</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="applicationList"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Nội dung Tab: Thông tin công ty -->
-                <div id="CompanyInfo" class="tab-content" style="display: none;">
+                <div id="CandidateManagement" class="tab-content">
+                    <div class="section-header">
+                        <h2>Danh sách ứng viên đã trúng tuyển</h2>
+                    </div>
+                    <div class="application-management-layout">
+                        <div class="job-postings-list-container">
+                            <h4>Chọn một tin tuyển dụng</h4>
+                            <ul id="candidate-manager-job-list"></ul>
+                        </div>
+                        <div class="candidate-list-view">
+                            <div id="accepted-candidate-list-placeholder">
+                                <i class="fas fa-arrow-left"></i>
+                                <p>Chọn một tin tuyển dụng để xem các ứng viên đã trúng tuyển.</p>
+                            </div>
+                            <table style="display:none;">
+                                <thead>
+                                    <tr>
+                                        <th>Ứng viên</th>
+                                        <th>Ngày nộp</th>
+                                        <th>Email</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="acceptedCandidateList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="CompanyInfo" class="tab-content">
                     <div class="section-header">
                         <h2>Thông tin công ty của bạn</h2>
                     </div>
                     <form id="editCompanyForm" onsubmit="handleUpdateCompany(event)">
-                        <label>Tên công ty</label>
-                        <input type="text" id="editCompanyName" required>
-                        <label>Lĩnh vực</label>
-                        <input type="text" id="editCompanyIndustry">
-                        <label>Website</label>
-                        <input type="text" id="editCompanyWebsite">
-                        <div class="modal-btn-group">
+                        <div class="company-form-grid">
+                            <div class="form-group">
+                                <label for="editCompanyName">Tên công ty</label>
+                                <input type="text" id="editCompanyName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCompanyIndustry">Lĩnh vực</label>
+                                <input type="text" id="editCompanyIndustry">
+                            </div>
+                            <div class="form-group">
+                                <label for="editCompanyWebsite">Website</label>
+                                <input type="text" id="editCompanyWebsite">
+                            </div>
+                        </div>
+                        <div class="form-actions">
                             <button type="submit" class="btn main-btn">Cập nhật thông tin</button>
                         </div>
                     </form>
@@ -139,7 +179,6 @@
         </section>
     </main>
 
-    <!-- Modal Đăng/Sửa tin (giữ nguyên) -->
     <div class="modal" id="jobModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeJobForm()">&times;</span>
@@ -162,80 +201,65 @@
         </div>
     </div>
 
-    <script src="../assests/js/quanly.js"></script>
-
-</body>
-
-<!-- ================================================================= -->
-<!--    THAY THẾ TOÀN BỘ MODAL CŨ BẰNG PHIÊN BẢN THIẾT KẾ MỚI NÀY    -->
-<!-- ================================================================= -->
-
-<!-- Modal Sửa chi tiết tin tuyển dụng (Thiết kế mới) -->
-<div class="modal" id="jobDetailModal">
-    <div class="modal-content large">
-        <!-- Phần Header của Modal -->
-        <div class="modal-header">
-            <h3 id="modalDetailTitle">Chỉnh sửa chi tiết tin tuyển dụng</h3>
-            <span class="close-modal" onclick="closeJobDetailForm()">&times;</span>
+    <div class="modal" id="jobDetailModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="modalDetailTitle">Chỉnh sửa chi tiết tin tuyển dụng</h3>
+                <span class="close-modal" onclick="closeJobDetailForm()">&times;</span>
+            </div>
+            <form id="jobDetailForm" onsubmit="submitJobDetailForm(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="detailJobId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jobSalaryDescription">Mô tả mức lương</label>
+                            <input type="text" id="jobSalaryDescription" placeholder="Ví dụ: Lên đến 2000 USD">
+                        </div>
+                        <div class="form-group">
+                            <label for="jobLevel">Cấp bậc</label>
+                            <input type="text" id="jobLevel" placeholder="Ví dụ: Trưởng Nhóm, Nhân viên">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jobWorkFormat">Hình thức làm việc</label>
+                            <input type="text" id="jobWorkFormat" placeholder="Ví dụ: In Office, Remote, Hybrid">
+                        </div>
+                        <div class="form-group">
+                            <label for="jobContractType">Loại hợp đồng</label>
+                            <input type="text" id="jobContractType" placeholder="Ví dụ: Full-time, Part-time">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobResponsibilities">Trách nhiệm</label>
+                        <textarea id="jobResponsibilities" rows="8"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobRequiredSkills">Yêu cầu</label>
+                        <textarea id="jobRequiredSkills" rows="8"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobBenefits">Phúc lợi</label>
+                        <textarea id="jobBenefits" rows="6"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeJobDetailForm()">Huỷ</button>
+                    <button type="submit" class="btn main-btn">Lưu chi tiết</button>
+                </div>
+            </form>
         </div>
-
-        <!-- Đặt thẻ <form> bao trọn body và footer để nút submit hoạt động -->
-        <form id="jobDetailForm" onsubmit="submitJobDetailForm(event)">
-            <!-- Phần Body của Modal chứa các input -->
-            <div class="modal-body">
-                <!-- Input ẩn để lưu Job ID đang được sửa -->
-                <input type="hidden" id="detailJobId">
-
-                <!-- Hàng 1: Mức lương & Cấp bậc -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobSalaryDescription">Mô tả mức lương</label>
-                        <input type="text" id="jobSalaryDescription" placeholder="Ví dụ: Lên đến 2000 USD, Cạnh tranh">
-                    </div>
-                    <div class="form-group">
-                        <label for="jobLevel">Cấp bậc</label>
-                        <input type="text" id="jobLevel" placeholder="Ví dụ: Trưởng Nhóm, Nhân viên">
-                    </div>
-                </div>
-
-                <!-- Hàng 2: Hình thức & Hợp đồng -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jobWorkFormat">Hình thức làm việc</label>
-                        <input type="text" id="jobWorkFormat" placeholder="Ví dụ: In Office, Remote, Hybrid">
-                    </div>
-                    <div class="form-group">
-                        <label for="jobContractType">Loại hợp đồng</label>
-                        <input type="text" id="jobContractType" placeholder="Ví dụ: Full-time, Part-time">
-                    </div>
-                </div>
-
-                <!-- Các trường văn bản dài -->
-                <div class="form-group">
-                    <label for="jobResponsibilities">Trách nhiệm công việc</label>
-                    <textarea id="jobResponsibilities" rows="8"
-                        placeholder="Nhập mỗi trách nhiệm trên một dòng..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="jobRequiredSkills">Yêu cầu kỹ năng & chuyên môn</label>
-                    <textarea id="jobRequiredSkills" rows="8"
-                        placeholder="Nhập mỗi yêu cầu trên một dòng..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="jobBenefits">Phúc lợi</label>
-                    <textarea id="jobBenefits" rows="6" placeholder="Nhập mỗi phúc lợi trên một dòng..."></textarea>
-                </div>
-            </div>
-
-            <!-- Phần Footer của Modal chứa các nút bấm -->
-            <div class="modal-footer">
-                <button type="button" class="btn" onclick="closeJobDetailForm()">Huỷ</button>
-                <button type="submit" class="btn main-btn">Lưu chi tiết</button>
-            </div>
-        </form>
     </div>
-</div>
+
+    <div class="modal" id="jobInfoModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeJobInfoModal()">&times;</span>
+            <h3 id="infoModalTitle">Thông tin cơ bản</h3>
+            <div id="infoModalBody" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <script src="../assests/js/quanly.js"></script>
+</body>
 
 </html>

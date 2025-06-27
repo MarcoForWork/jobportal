@@ -320,6 +320,14 @@ td {
     color: #845ef7;
 }
 
+.action-btn.view {
+    color: #17a2b8;
+}
+
+.action-btn.info {
+    color: #fd7e14;
+}
+
 .action-btn:hover {
     background: #f1f5fb;
 }
@@ -341,7 +349,7 @@ td {
 }
 
 
-/* ======= MODAL CHUNG ======= */
+/* ======= MODAL STYLES ======= */
 .modal {
     display: none;
     position: fixed;
@@ -382,14 +390,16 @@ td {
     min-width: 360px;
 }
 
-#jobForm label {
+#jobForm label,
+#companyForm label {
     display: block;
     margin-top: 13px;
     font-weight: 500;
     color: #232323;
 }
 
-#jobForm input[type="text"] {
+#jobForm input[type="text"],
+#companyForm input[type="text"] {
     width: 100%;
     padding: 8px 10px;
     border-radius: 7px;
@@ -411,7 +421,6 @@ td {
     text-align: right;
 }
 
-/* MODAL CHI TIẾT */
 .modal-content.large {
     max-width: 850px;
     width: 95%;
@@ -512,6 +521,177 @@ td {
     margin-bottom: 20px;
 }
 
+/* ======= CÁC TAB QUẢN LÝ ======= */
+.application-management-layout {
+    display: flex;
+    gap: 30px;
+    min-height: 500px;
+}
+
+.job-postings-list-container {
+    flex: 0 0 320px;
+    border-right: 2px solid #f0f2f5;
+    padding-right: 20px;
+}
+
+.job-postings-list-container h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-left: 10px;
+}
+
+.candidate-list-view {
+    flex: 1;
+}
+
+#candidate-list-placeholder,
+#accepted-candidate-list-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #888;
+    text-align: center;
+}
+
+#candidate-list-placeholder i,
+#accepted-candidate-list-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+/* <<< PHẦN SỬA LỖI GIAO DIỆN >>> */
+/* Định dạng chung cho cả hai danh sách tin tuyển dụng ở cột trái */
+#application-job-list,
+#candidate-manager-job-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+#application-job-list li,
+#candidate-manager-job-list li {
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+    color: #444;
+    border: 1px solid transparent;
+    position: relative;
+    padding-right: 45px;
+}
+
+#application-job-list li:hover,
+#candidate-manager-job-list li:hover {
+    background-color: #f1f5fb;
+    color: #007bff;
+}
+
+#application-job-list li.selected,
+#candidate-manager-job-list li.selected {
+    background-color: #e3f2fd;
+    color: #007bff;
+    font-weight: 600;
+    border-color: #b3d7ff;
+}
+
+.job-info-btn-container {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+}
+
+#application-job-list li:hover .job-info-btn-container,
+#candidate-manager-job-list li:hover .job-info-btn-container {
+    display: block;
+}
+
+/* Modal xem thông tin nhanh */
+#infoModalBody p {
+    margin: 12px 0;
+    line-height: 1.7;
+    font-size: 1rem;
+    color: #444;
+}
+
+#infoModalBody strong {
+    color: #222;
+    min-width: 120px;
+    display: inline-block;
+}
+
+/* THÔNG TIN CÔNG TY TAB */
+#CompanyInfo .section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+#editCompanyForm {
+    margin-top: 1.5rem;
+}
+
+.company-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    align-items: end;
+}
+
+#editCompanyForm .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+#editCompanyForm label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+#editCompanyForm input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #dcdfe4;
+    font-size: 1rem;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+#editCompanyForm input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.form-actions .btn.main-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+}
+
+#editCompanyForm .modal-btn-group {
+    text-align: right;
+    margin-top: 2rem;
+}
+
+
 /* ======= RESPONSIVE ======= */
 @media (max-width: 900px) {
     .dashboard-card {
@@ -556,93 +736,4 @@ td {
         width: 28px;
         height: 28px;
     }
-}
-
-
-/* ======= PHẦN CSS MỚI CHO TAB THÔNG TIN CÔNG TY ======= */
-/* LƯU Ý: Để các style này hoạt động đẹp nhất, bạn nên cập nhật lại file quanly.html
-   để nhóm mỗi cặp label và input vào trong một thẻ div. Ví dụ:
-   
-    <form id="editCompanyForm">
-        <div class="company-form-grid">
-            <div class="form-group">
-                <label for="editCompanyName">Tên công ty</label>
-                <input type="text" id="editCompanyName" required>
-            </div>
-            <!-- các cặp label/input khác -->
-        </div>
-        <div class="form-actions">
-            <button type="submit" class="btn main-btn">Cập nhật thông tin</button>
-        </div>
-    </form>
-*/
-
-#CompanyInfo .section-header h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-#editCompanyForm {
-    margin-top: 1.5rem;
-}
-
-/* Vùng chứa các trường nhập liệu */
-.company-form-grid {
-    display: grid;
-    /* Chia thành 3 cột trên màn hình lớn, tự động xuống hàng trên màn hình nhỏ */
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    align-items: end;
-    /* Căn các item theo hàng dưới cùng */
-}
-
-/* Style cho từng nhóm label-input nếu được bọc trong .form-group */
-#editCompanyForm .form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-#editCompanyForm label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-medium);
-    font-size: 0.95rem;
-}
-
-#editCompanyForm input[type="text"] {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1.5px solid #dcdfe4;
-    font-size: 1rem;
-    background: #fff;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-}
-
-#editCompanyForm input[type="text"]:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-}
-
-/* Style cho vùng chứa nút bấm */
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    /* Đẩy nút về phía bên phải */
-    margin-top: 2rem;
-}
-
-/* Style lại cho nút bấm trong form này */
-.form-actions .btn.main-btn {
-    padding: 10px 24px;
-    font-size: 1rem;
-}
-
-/* Style lại cho .modal-btn-group nếu bạn không thay đổi HTML */
-#editCompanyForm .modal-btn-group {
-    text-align: right;
-    margin-top: 2rem;
 }

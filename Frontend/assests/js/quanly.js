@@ -1,8 +1,9 @@
 // Biến toàn cục để lưu trữ thông tin
 let userCompany = null;
 let currentUser = null;
+let selectedJobId = null;
 
-// Đổi tên biến để dễ sử dụng hơn
+// API Base URL
 const API_BASE_URL = 'http://localhost:8080/jobportal/api';
 
 /**
@@ -42,11 +43,8 @@ async function initializeApp() {
     document.getElementById('usernameDisplay').textContent = currentUser.username;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/companies`, {
-            cache: 'no-cache'
-        });
+        const response = await fetch(`${API_BASE_URL}/companies`, { cache: 'no-cache' });
         if (!response.ok) throw new Error(`Không thể tải danh sách công ty (Lỗi: ${response.status})`);
-
         const companies = await response.json();
         userCompany = companies.find(c => c.ownerUserId === currentUser.id);
 
@@ -62,7 +60,7 @@ async function initializeApp() {
 }
 
 // =================================================================
-// ============== LOGIC HIỂN THỊ GIAO DIỆN CHÍNH =====================
+// ============== HIỂN THỊ GIAO DIỆN VÀ QUẢN LÝ CÔNG TY =============
 // =================================================================
 
 function showCreateCompanyView() {
@@ -79,10 +77,12 @@ function showCompanyDashboard() {
     renderCompanyInfo();
 }
 
-// =================================================================
-// ==================== LOGIC QUẢN LÝ CÔNG TY =======================
-// (Giữ nguyên)
-// =================================================================
+function renderCompanyInfo() {
+    if (!userCompany) return;
+    document.getElementById('editCompanyName').value = userCompany.companyName;
+    document.getElementById('editCompanyIndustry').value = userCompany.industry;
+    document.getElementById('editCompanyWebsite').value = userCompany.website;
+}
 
 async function handleCreateCompany(event) {
     event.preventDefault();
@@ -108,13 +108,6 @@ async function handleCreateCompany(event) {
     } catch (error) {
         alert('Không thể tạo công ty: ' + error.message);
     }
-}
-
-function renderCompanyInfo() {
-    if (!userCompany) return;
-    document.getElementById('editCompanyName').value = userCompany.companyName;
-    document.getElementById('editCompanyIndustry').value = userCompany.industry;
-    document.getElementById('editCompanyWebsite').value = userCompany.website;
 }
 
 async function handleUpdateCompany(event) {
@@ -145,9 +138,8 @@ async function handleUpdateCompany(event) {
     }
 }
 
-
 // =================================================================
-// ==================== LOGIC QUẢN LÝ TIN TUYỂN DỤNG =================
+// ==================== QUẢN LÝ TIN TUYỂN DỤNG (TAB 1) ===============
 // =================================================================
 
 async function loadJobs() {
@@ -165,10 +157,6 @@ async function loadJobs() {
     }
 }
 
-/**
- * === CẬP NHẬT QUAN TRỌNG ===
- * Thêm nút "Sửa chi tiết" (hình file) vào cột Hành động
- */
 function renderJobs(jobs) {
     const tbody = document.getElementById('jobList');
     if (!tbody) return;
@@ -176,16 +164,9 @@ function renderJobs(jobs) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888">Chưa có tin tuyển dụng nào</td></tr>`;
         return;
     }
-
-    const statusMap = {
-        APPROVED: { text: 'Đã duyệt', className: 'approved' },
-        PENDING: { text: 'Chờ duyệt', className: 'pending' },
-        REJECTED: { text: 'Bị từ chối', className: 'rejected' }
-    };
-
+    const statusMap = { APPROVED: { text: 'Đã duyệt', className: 'approved' }, PENDING: { text: 'Chờ duyệt', className: 'pending' }, REJECTED: { text: 'Bị từ chối', className: 'rejected' } };
     tbody.innerHTML = jobs.map(job => {
         const statusInfo = statusMap[job.status] || { text: job.status, className: 'inactive' };
-
         return `
           <tr>
             <td>${job.jobTitle}</td>
@@ -194,20 +175,17 @@ function renderJobs(jobs) {
             <td>${new Date(job.updatedAt).toLocaleDateString('vi-VN')}</td>
             <td><span class="status-${statusInfo.className}">${statusInfo.text}</span></td>
             <td>
+              <a href="chitiet.html?id=${job.jobId}" target="_blank" class="action-btn view" title="Xem tin trên trang"><i class="fas fa-eye"></i></a>
               <button class="action-btn edit" title="Sửa thông tin cơ bản" onclick="editJob(${job.jobId})"><i class="fas fa-pen"></i></button>
-              
-              <!-- NÚT MỚI: Sửa chi tiết -->
               <button class="action-btn detail" title="Sửa chi tiết công việc" onclick="openJobDetailForm(${job.jobId})"><i class="fas fa-file-alt"></i></button>
-              
               <button class="action-btn delete" title="Xoá" onclick="deleteJob(${job.jobId})"><i class="fas fa-trash-alt"></i></button>
             </td>
           </tr>`;
     }).join('');
 }
 
-// ---- LOGIC QUẢN LÝ TIN CƠ BẢN (FORM CŨ) ----
-
-function openJobForm(job = null) {
+// Các hàm cho modal và form (openJobForm, deleteJob, v.v...) giữ nguyên không đổi
+function openJobForm(job = null) {/*... giữ nguyên ...*/
     const modal = document.getElementById('jobModal');
     modal.style.display = 'flex';
     document.getElementById('jobForm').reset();
@@ -223,12 +201,8 @@ function openJobForm(job = null) {
         document.getElementById('modalTitle').textContent = 'Đăng tin tuyển dụng';
     }
 }
-
-function closeJobForm() {
-    document.getElementById('jobModal').style.display = 'none';
-}
-
-async function submitJobForm(e) {
+function closeJobForm() { document.getElementById('jobModal').style.display = 'none'; }
+async function submitJobForm(e) {/*... giữ nguyên ...*/
     e.preventDefault();
     const token = localStorage.getItem('authToken');
     const jobId = document.getElementById('jobId').value;
@@ -259,8 +233,7 @@ async function submitJobForm(e) {
         alert('Không thể lưu tin. ' + error.message);
     }
 }
-
-async function editJob(jobId) {
+async function editJob(jobId) {/*... giữ nguyên ...*/
     const token = localStorage.getItem('authToken');
     try {
         const response = await fetch(`${API_BASE_URL}/jobpostings/${jobId}`, {
@@ -272,8 +245,7 @@ async function editJob(jobId) {
         alert(error.message);
     }
 }
-
-async function deleteJob(jobId) {
+async function deleteJob(jobId) {/*... giữ nguyên ...*/
     if (confirm('Bạn chắc chắn muốn xoá tin này?')) {
         const token = localStorage.getItem('authToken');
         try {
@@ -288,28 +260,17 @@ async function deleteJob(jobId) {
         }
     }
 }
-
-// =================================================================
-// ========= LOGIC QUẢN LÝ CHI TIẾT TIN TUYỂN DỤNG (MỚI) ===========
-// =================================================================
-
-/**
- * Mở form để chỉnh sửa thông tin chi tiết.
- * @param {number} jobId - ID của tin tuyển dụng cần sửa.
- */
-async function openJobDetailForm(jobId) {
+async function openJobDetailForm(jobId) {/*... giữ nguyên ...*/
     const token = localStorage.getItem('authToken');
     const modal = document.getElementById('jobDetailModal');
     const form = document.getElementById('jobDetailForm');
-    form.reset(); // Xóa dữ liệu cũ
-    document.getElementById('detailJobId').value = jobId; // Gán ID vào form
+    form.reset();
+    document.getElementById('detailJobId').value = jobId;
 
     try {
-        // API này lấy đầy đủ thông tin chi tiết (giả định endpoint đã có)
         const response = await fetch(`${API_BASE_URL}/jobpostings/${jobId}/details`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-
         if (response.ok) {
             const details = await response.json();
             document.getElementById('jobSalaryDescription').value = details.salaryDescription || '';
@@ -320,42 +281,26 @@ async function openJobDetailForm(jobId) {
             document.getElementById('jobRequiredSkills').value = details.requiredSkills || '';
             document.getElementById('jobBenefits').value = details.benefits || '';
         } else if (response.status === 404) {
-            // Nếu không có dữ liệu (lần đầu chỉnh sửa), form sẽ trống
             console.log("No existing details found. Opening a blank form.");
         } else {
             throw new Error(`Lỗi tải chi tiết: ${response.statusText}`);
         }
-
     } catch (error) {
         alert("Không thể tải chi tiết công việc. Vui lòng thử lại.");
-        return; // Không mở modal nếu có lỗi
+        return;
     }
-
-    modal.style.display = 'flex'; // Hiển thị modal
+    modal.style.display = 'flex';
 }
-
-/**
- * Đóng form chi tiết.
- */
-function closeJobDetailForm() {
-    document.getElementById('jobDetailModal').style.display = 'none';
-}
-
-/**
- * Gửi dữ liệu chi tiết lên server.
- * @param {Event} event - Sự kiện submit form.
- */
-async function submitJobDetailForm(event) {
+function closeJobDetailForm() { document.getElementById('jobDetailModal').style.display = 'none'; }
+async function submitJobDetailForm(event) {/*... giữ nguyên ...*/
     event.preventDefault();
     const token = localStorage.getItem('authToken');
     const jobId = document.getElementById('detailJobId').value;
-
     if (!jobId) {
         alert("Lỗi: Không tìm thấy ID của tin tuyển dụng.");
         return;
     }
 
-    // Thu thập dữ liệu từ form chi tiết
     const detailRequest = {
         salaryDescription: document.getElementById('jobSalaryDescription').value.trim(),
         jobLevel: document.getElementById('jobLevel').value.trim(),
@@ -372,31 +317,244 @@ async function submitJobDetailForm(event) {
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(detailRequest)
         });
-
         if (!response.ok) throw new Error(await response.text());
-
         alert("Lưu chi tiết thành công!");
         closeJobDetailForm();
-
     } catch (error) {
         alert("Không thể lưu chi tiết. " + error.message);
     }
 }
 
+
 // =================================================================
-// ==================== HÀM TIỆN ÍCH KHÁC ===========================
+// ============== HÀM HELPER ĐỂ HIỂN THỊ DANH SÁCH TIN ==============
 // =================================================================
+
+// Hàm helper để tái sử dụng code, hiển thị danh sách tin đã duyệt ra cột trái
+async function _renderApprovedJobsList(listElementId, onJobClick) {
+    const listEl = document.getElementById(listElementId);
+    if (!listEl) return;
+    listEl.innerHTML = '<li>Đang tải...</li>';
+
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE_URL}/jobpostings/company/${userCompany.companyId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }, cache: 'no-cache'
+        });
+        if (!response.ok) throw new Error('Không thể tải danh sách tin tuyển dụng.');
+
+        const allJobs = await response.json();
+        const approvedJobs = allJobs.filter(job => job.status === 'APPROVED');
+
+        if (approvedJobs.length === 0) {
+            listEl.innerHTML = '<li>Không có tin tuyển dụng nào được duyệt.</li>';
+            return;
+        }
+
+        listEl.innerHTML = approvedJobs.map(job => `
+            <li id="job-item-${job.jobId}-${listElementId}" onclick="${onJobClick}(${job.jobId}, this)">
+                <strong>${job.jobTitle}</strong>
+                <div class="job-info-btn-container">
+                    <button class="action-btn info" onclick="showJobInfo(event, ${job.jobId})" title="Xem thông tin">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </li>
+        `).join('');
+    } catch (error) {
+        listEl.innerHTML = `<li><span style="color:red;">Lỗi tải dữ liệu.</span></li>`;
+    }
+}
+
+// =================================================================
+// ==================== QUẢN LÝ ĐƠN ỨNG TUYỂN (TAB 2) ===============
+// =================================================================
+
+function loadApplications() {
+    _renderApprovedJobsList('application-job-list', 'selectJobForApplications');
+    document.getElementById('candidate-list-placeholder').style.display = 'flex';
+    const table = document.querySelector('#ApplicationManagement table');
+    if (table) table.style.display = 'none';
+}
+
+function selectJobForApplications(jobId, element) {
+    if (selectedJobId === jobId && document.querySelector('#ApplicationManagement').style.display === 'block') return;
+    selectedJobId = jobId;
+
+    document.querySelectorAll('#application-job-list li').forEach(li => li.classList.remove('selected'));
+    element.classList.add('selected');
+
+    document.getElementById('candidate-list-placeholder').style.display = 'none';
+    document.querySelector('#ApplicationManagement table').style.display = 'table';
+    loadApplicationsForJob(jobId);
+}
+
+async function loadApplicationsForJob(jobId) {
+    const tbody = document.getElementById('applicationList');
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Đang tải...</td></tr>`;
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE_URL}/job-applications/jobs/${jobId}/candidates`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!response.ok) throw new Error(`Lỗi ${response.status}`);
+
+        const applications = await response.json();
+        const applicationsToShow = applications.filter(app => app.state !== 'Accepted');
+        renderJobApplications(applicationsToShow);
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">${error.message}</td></tr>`;
+    }
+}
+
+function renderJobApplications(applications) {
+    const tbody = document.getElementById('applicationList');
+    if (!applications || applications.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">Chưa có đơn ứng tuyển (chưa được duyệt) nào.</td></tr>`;
+        return;
+    }
+    const stateMap = { Pending: { text: 'Chờ duyệt', className: 'pending' }, Rejected: { text: 'Đã từ chối', className: 'rejected' } };
+    tbody.innerHTML = applications.map(app => {
+        const stateInfo = stateMap[app.state] || { text: app.state, className: 'inactive' };
+        const candidateName = (app.lastName || app.firstName) ? `${app.lastName || ''} ${app.firstName || ''}`.trim() : 'Ứng viên ẩn danh';
+        let actionsHtml = (app.state === 'Pending') ?
+            `<button class="action-btn accept" title="Chấp nhận" onclick="updateApplicationState(${app.id}, 'Accepted')"><i class="fas fa-check-circle"></i></button>
+             <button class="action-btn reject" title="Từ chối" onclick="updateApplicationState(${app.id}, 'Rejected')"><i class="fas fa-times-circle"></i></button>`
+            : 'Đã xử lý';
+        return `
+          <tr>
+            <td>${candidateName}</td>
+            <td>${new Date(app.applyDate).toLocaleDateString('vi-VN')}</td>
+            <td><span class="status-${stateInfo.className}">${stateInfo.text}</span></td>
+            <td>${actionsHtml}</td>
+          </tr>`;
+    }).join('');
+}
+
+async function updateApplicationState(applicationId, newState) {
+    const actionText = newState === 'Accepted' ? 'chấp nhận' : 'từ chối';
+    if (!confirm(`Bạn có chắc muốn ${actionText} đơn ứng tuyển này?`)) return;
+
+    try {
+        const token = localStorage.getItem('authToken');
+        const formData = new URLSearchParams();
+        formData.append('state', newState);
+
+        const response = await fetch(`${API_BASE_URL}/job-applications/${applicationId}/state`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: formData
+        });
+
+        if (!response.ok) throw new Error(await response.text() || `Lỗi khi ${actionText}`);
+
+        alert(`Đã ${actionText} đơn ứng tuyển thành công!`);
+        if (selectedJobId) loadApplicationsForJob(selectedJobId);
+
+    } catch (error) {
+        alert('Đã xảy ra lỗi: ' + error.message);
+    }
+}
+
+// =================================================================
+// ==================== QUẢN LÝ ỨNG VIÊN (TAB 3) =====================
+// =================================================================
+
+function loadAcceptedCandidatesTab() {
+    _renderApprovedJobsList('candidate-manager-job-list', 'selectJobForAcceptedCandidates');
+    document.getElementById('accepted-candidate-list-placeholder').style.display = 'flex';
+    const table = document.querySelector('#CandidateManagement table');
+    if (table) table.style.display = 'none';
+}
+
+function selectJobForAcceptedCandidates(jobId, element) {
+    if (selectedJobId === jobId && document.querySelector('#CandidateManagement').style.display === 'block') return;
+    selectedJobId = jobId;
+
+    document.querySelectorAll('#candidate-manager-job-list li').forEach(li => li.classList.remove('selected'));
+    element.classList.add('selected');
+
+    document.getElementById('accepted-candidate-list-placeholder').style.display = 'none';
+    document.querySelector('#CandidateManagement table').style.display = 'table';
+    loadAcceptedCandidatesForJob(jobId);
+}
+
+async function loadAcceptedCandidatesForJob(jobId) {
+    const tbody = document.getElementById('acceptedCandidateList');
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Đang tải...</td></tr>`;
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE_URL}/job-applications/jobs/${jobId}/candidates`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!response.ok) throw new Error(`Lỗi ${response.status}`);
+
+        const applications = await response.json();
+        const acceptedCandidates = applications.filter(app => app.state === 'Accepted');
+        renderAcceptedCandidates(acceptedCandidates);
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:red;">${error.message}</td></tr>`;
+    }
+}
+
+function renderAcceptedCandidates(candidates) {
+    const tbody = document.getElementById('acceptedCandidateList');
+    if (!candidates || candidates.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">Chưa có ứng viên nào trúng tuyển cho tin này.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = candidates.map(app => {
+        const candidateName = (app.lastName || app.firstName) ? `${app.lastName || ''} ${app.firstName || ''}`.trim() : 'N/A';
+        const userEmail = app.userEmail || 'N/A'; // Giả sử API trả về email
+        return `
+          <tr>
+            <td>${candidateName}</td>
+            <td>${new Date(app.applyDate).toLocaleDateString('vi-VN')}</td>
+            <td>${userEmail}</td>
+            <td><button class="btn" onclick="alert('Chức năng đang phát triển')">Liên hệ</button></td>
+          </tr>`;
+    }).join('');
+}
+
+
+// =================================================================
+// ============== CÁC HÀM MODAL VÀ TIỆN ÍCH KHÁC ====================
+// =================================================================
+
+function closeJobInfoModal() {
+    document.getElementById('jobInfoModal').style.display = 'none';
+}
+
+async function showJobInfo(event, jobId) {
+    event.stopPropagation();
+    const modal = document.getElementById('jobInfoModal');
+    const modalBody = document.getElementById('infoModalBody');
+    modalBody.innerHTML = '<p>Đang tải...</p>';
+    modal.style.display = 'flex';
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE_URL}/jobpostings/${jobId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!response.ok) throw new Error('Không thể tải thông tin.');
+        const job = await response.json();
+        modalBody.innerHTML = `
+            <p><strong>Vị trí:</strong> ${job.jobTitle}</p>
+            <p><strong>Địa điểm:</strong> ${job.location}</p>
+            <p><strong>Lương:</strong> ${job.salaryNegotiable ? 'Thoả thuận' : 'Cố định'}</p>
+            <p><strong>Kỹ năng:</strong> ${job.skills && JSON.parse(job.skills).length > 0 ? JSON.parse(job.skills).join(', ') : 'Không yêu cầu'}</p>
+            <p><strong>Ngày cập nhật:</strong> ${new Date(job.updatedAt).toLocaleDateString('vi-VN')}</p>`;
+    } catch (error) {
+        modalBody.innerHTML = `<p style="color: red;">${error.message}</p>`;
+    }
+}
 
 function openTab(evt, tabName, element) {
     document.querySelectorAll(".tab-content").forEach(tc => tc.style.display = "none");
     document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active"));
-
     document.getElementById(tabName).style.display = "block";
     const target = evt ? evt.currentTarget : element;
     if (target) target.classList.add("active");
 
+    selectedJobId = null; // Reset ID tin đang chọn khi chuyển tab
+
     if (tabName === 'JobManagement') loadJobs();
     if (tabName === 'ApplicationManagement') loadApplications();
+    if (tabName === 'CandidateManagement') loadAcceptedCandidatesTab();
 }
 
 function logout(message = '') {
@@ -405,10 +563,8 @@ function logout(message = '') {
     window.location.href = 'login.html';
 }
 
-// Bắt đầu ứng dụng khi trang được tải
 document.addEventListener('DOMContentLoaded', initializeApp);
 
-// Logic cho dropdown menu
 document.querySelector('.menu-toggle').onclick = (e) => {
     document.querySelector('.user-menu').classList.toggle('active');
     e.stopPropagation();
@@ -420,35 +576,3 @@ document.body.onclick = (e) => {
         menu.classList.remove('active');
     }
 };
-
-// Logic quản lý đơn ứng tuyển (dữ liệu giả)
-async function loadApplications() {
-    const tbody = document.getElementById('applicationList');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Đang tải...</td></tr>`;
-    const mockApplications = [
-        { id: 101, candidateName: 'Nguyễn Văn An', jobTitle: 'Mobile Developer', applyDate: '2025-06-22T10:00:00Z', status: 'Pending' },
-        { id: 102, candidateName: 'Trần Thị Bình', jobTitle: 'Trưởng nhóm Kiểm thử', applyDate: '2025-06-23T14:30:00Z', status: 'Accepted' }
-    ];
-    renderApplications(mockApplications);
-}
-
-function renderApplications(applications) {
-    const tbody = document.getElementById('applicationList');
-    if (!applications || applications.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#888;">Chưa có đơn ứng tuyển nào</td></tr>`;
-        return;
-    }
-    tbody.innerHTML = applications.map(app => `
-      <tr>
-        <td>${app.candidateName}</td>
-        <td>${app.jobTitle}</td>
-        <td>${new Date(app.applyDate).toLocaleDateString('vi-VN')}</td>
-        <td><span class="status-${app.status.toLowerCase()}">${app.status}</span></td>
-        <td>
-          ${app.status === 'Pending' ?
-            `<button class="action-btn accept" title="Chấp nhận"><i class="fas fa-check-circle"></i></button>
-             <button class="action-btn reject" title="Từ chối"><i class="fas fa-times-circle"></i></button>`
-            : 'Đã xử lý'}
-        </td>
-      </tr>`).join('');
-}

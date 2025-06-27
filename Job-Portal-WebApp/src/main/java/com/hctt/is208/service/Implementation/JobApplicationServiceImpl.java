@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.hctt.is208.model.Notification;
+import com.hctt.is208.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class JobApplicationServiceImpl implements JobApplicationService{
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     @Autowired
     private JobApplicationRepository jobApplicationRepository;
 
@@ -78,18 +83,52 @@ public class JobApplicationServiceImpl implements JobApplicationService{
         return jobApplicationRepository.findByJobId(jobId);
     }
 
+
+    private void createStateChangeNotification(JobApplication application) {
+        if (application == null || application.getUser() == null || application.getJobPosting() == null) {
+            return;
+        }
+
+        String message = "";
+       String linkToApplication = "/my-applications";
+
+        if (application.getState() == JobApplication.State.ACCEPTED) {
+            message = "Chúc mừng! Đơn ứng tuyển của bạn cho vị trí \"" + application.getJobPosting().getJobTitle() + "\" đã được chấp nhận.";
+        } else if (application.getState() == JobApplication.State.REJECTED) {
+            message = "Rất tiếc, đơn ứng tuyển của bạn cho vị trí \"" + application.getJobPosting().getJobTitle() + "\" đã bị từ chối.";
+        }
+
+        if (!message.isEmpty()) {
+            // Cần đảm bảo bạn đã import model Notification
+            // import com.hctt.is208.model.Notification;
+            Notification notification = new Notification();
+            notification.setUser(application.getUser());
+            notification.setMessage(message);
+            notification.setLink(linkToApplication);
+
+            notificationRepository.save(notification);
+        }
+    }
     @Override
     @Transactional
     public void updateCandidateState(int applicationId, String state) {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Job application with ID " + applicationId + " not found"));
+
+
+        JobApplication.State newState;
+
         try {
-            JobApplication.State newState = JobApplication.State.valueOf(state);
-            application.setState(newState);
-            jobApplicationRepository.save(application);
+            newState = JobApplication.State.valueOf(state.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid state value: " + state);
         }
+
+        application.setState(newState);
+        JobApplication updatedApplication = jobApplicationRepository.save(application);
+
+        createStateChangeNotification(updatedApplication);
+
     }
-    
+
 }

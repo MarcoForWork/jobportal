@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Ứng viên - HCTT</title>
+    <link rel="stylesheet" href="../assests/css/candidatemanager.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <header class="topdev-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="quanly.html" class="logo" id="homelogo">HCTT</a>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="candidatemanager.html" class="active">Candidate Management</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="menu-toggle">
+                        <img src="https://via.placeholder.com/30" alt="User Avatar" class="user-avatar">
+                        <span id="usernameDisplay" style="font-weight: 500;"></span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="#" class="logout-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="candidateManagerSection" class="dashboard-section">
+            <div class="dashboard-card">
+                <div class="section-header">
+                    <h2>Danh sách ứng viên đã trúng tuyển</h2>
+                </div>
+                <div class="application-management-layout">
+                    <div class="job-postings-list-container">
+                        <h4>Chọn một tin tuyển dụng</h4>
+                        <ul id="candidate-manager-job-list">
+                        </ul>
+                    </div>
+                    <div class="candidate-list-view">
+                        <div id="accepted-candidate-list-placeholder">
+                            <i class="fas fa-arrow-left"></i>
+                            <p>Chọn một tin tuyển dụng để xem các ứng viên đã trúng tuyển.</p>
+                        </div>
+                        <table style="display:none;">
+                            <thead>
+                                <tr>
+                                    <th>Ứng viên</th>
+                                    <th>Ngày nộp</th>
+                                    <th>Email</th>
+                                    <th>Vị trí</th>
+                                </tr>
+                            </thead>
+                            <tbody id="acceptedCandidateList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="jobInfoModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeJobInfoModal()">&times;</span>
+            <h3 id="infoModalTitle">Thông tin cơ bản</h3>
+            <div id="infoModalBody" style="margin-top: 20px;">
+            </div>
+        </div>
+    </div>
+
+    <script src="../assests/js/candidatemanager.js"></script>
+</body>
+
+</html>
