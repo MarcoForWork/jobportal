@@ -19,7 +19,7 @@
             <div class="header-right">
                 <div class="user-menu">
                     <div class="menu-toggle">
-                        <img src="https://via.placeholder.com/30" alt="User Avatar" class="user-avatar">
+                        <span class="user-avatar"></span>
                         <span id="usernameDisplay" style="font-weight: 500;"></span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
@@ -109,10 +109,11 @@
                             <table style="display:none;">
                                 <thead>
                                     <tr>
-                                        <th>Ứng viên</th>
-                                        <th>Ngày nộp</th>
-                                        <th>Trạng thái</th>
-                                        <th>Hành động</th>
+                                        <th style="text-align:center;">Ứng viên</th>
+                                        <th style="text-align:center;">Ngày nộp</th>
+                                        <th style="text-align:center;">Trạng thái</th>
+                                        <th style="text-align:center;">CV</th>
+                                        <th style="text-align:center;">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody id="applicationList"></tbody>
@@ -138,10 +139,10 @@
                             <table style="display:none;">
                                 <thead>
                                     <tr>
-                                        <th>Ứng viên</th>
-                                        <th>Ngày nộp</th>
-                                        <th>Email</th>
-                                        <th>Hành động</th>
+                                        <th style="text-align:center;">Ứng viên</th>
+                                        <th style="text-align:center;">Ngày nộp</th>
+                                        <th style="text-align:center;">Email</th>
+                                        <th style="text-align:center;">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody id="acceptedCandidateList"></tbody>
@@ -256,6 +257,15 @@
             <span class="close-modal" onclick="closeJobInfoModal()">&times;</span>
             <h3 id="infoModalTitle">Thông tin cơ bản</h3>
             <div id="infoModalBody" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Modal xem CV ứng viên -->
+    <div class="modal" id="candidateCvModal" style="display:none;z-index:9999;">
+        <div class="modal-content" style="max-width:900px;">
+            <span class="close-modal" onclick="closeCandidateCvModal()">&times;</span>
+            <h3>Xem CV ứng viên</h3>
+            <div id="candidateCvViewer" style="margin-top:16px;text-align:center;"></div>
         </div>
     </div>
 

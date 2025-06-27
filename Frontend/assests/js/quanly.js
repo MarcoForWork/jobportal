@@ -41,6 +41,7 @@ async function initializeApp() {
 
     currentUser = { id: decodedToken.userId, username: decodedToken.sub };
     document.getElementById('usernameDisplay').textContent = currentUser.username;
+    setUserAvatar(currentUser.username);
 
     try {
         const response = await fetch(`${API_BASE_URL}/companies`, { cache: 'no-cache' });
@@ -175,7 +176,7 @@ function renderJobs(jobs) {
             <td>${new Date(job.updatedAt).toLocaleDateString('vi-VN')}</td>
             <td><span class="status-${statusInfo.className}">${statusInfo.text}</span></td>
             <td>
-              <a href="chitiet.html?id=${job.jobId}" target="_blank" class="action-btn view" title="Xem tin trên trang"><i class="fas fa-eye"></i></a>
+              <button class="action-btn view" title="Xem chi tiết tin" onclick="showJobInfo(event, ${job.jobId})"><i class="fas fa-eye"></i></button>
               <button class="action-btn edit" title="Sửa thông tin cơ bản" onclick="editJob(${job.jobId})"><i class="fas fa-pen"></i></button>
               <button class="action-btn detail" title="Sửa chi tiết công việc" onclick="openJobDetailForm(${job.jobId})"><i class="fas fa-file-alt"></i></button>
               <button class="action-btn delete" title="Xoá" onclick="deleteJob(${job.jobId})"><i class="fas fa-trash-alt"></i></button>
@@ -408,7 +409,7 @@ async function loadApplicationsForJob(jobId) {
 function renderJobApplications(applications) {
     const tbody = document.getElementById('applicationList');
     if (!applications || applications.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#888;">Chưa có đơn ứng tuyển (chưa được duyệt) nào.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#888;">Chưa có đơn ứng tuyển (chưa được duyệt) nào.</td></tr>`;
         return;
     }
     const stateMap = { Pending: { text: 'Chờ duyệt', className: 'pending' }, Rejected: { text: 'Đã từ chối', className: 'rejected' } };
@@ -419,14 +420,42 @@ function renderJobApplications(applications) {
             `<button class="action-btn accept" title="Chấp nhận" onclick="updateApplicationState(${app.id}, 'Accepted')"><i class="fas fa-check-circle"></i></button>
              <button class="action-btn reject" title="Từ chối" onclick="updateApplicationState(${app.id}, 'Rejected')"><i class="fas fa-times-circle"></i></button>`
             : 'Đã xử lý';
+        // Nút xem CV
+        const viewCvBtn = app.userId ? `<button class="btn" title="Xem CV" onclick="viewCandidateCv('${app.userId}')" style="display:flex;align-items:center;justify-content:center;margin:auto;"><i class="fas fa-file-pdf"></i></button>` : '';
         return `
           <tr>
             <td>${candidateName}</td>
             <td>${new Date(app.applyDate).toLocaleDateString('vi-VN')}</td>
             <td><span class="status-${stateInfo.className}">${stateInfo.text}</span></td>
+            <td style="text-align:center;vertical-align:middle;">${viewCvBtn}</td>
             <td>${actionsHtml}</td>
           </tr>`;
     }).join('');
+}
+
+// Hàm xem CV ứng viên
+async function viewCandidateCv(userId) {
+    const token = localStorage.getItem('authToken');
+    const modal = document.getElementById('candidateCvModal');
+    const viewer = document.getElementById('candidateCvViewer');
+    viewer.innerHTML = '<p>Đang tải CV...</p>';
+    modal.style.display = 'flex';
+    try {
+        const res = await fetch(`${API_BASE_URL}/files/download/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Không tìm thấy CV ứng viên');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        viewer.innerHTML = `<iframe src="${url}" width="800px" height="600px" style="border:1px solid #ccc;display:block;margin:auto;"></iframe>`;
+    } catch (err) {
+        viewer.innerHTML = `<p style="color:red;">${err.message}</p>`;
+    }
+}
+
+function closeCandidateCvModal() {
+    document.getElementById('candidateCvModal').style.display = 'none';
+    document.getElementById('candidateCvViewer').innerHTML = '';
 }
 
 async function updateApplicationState(applicationId, newState) {
@@ -529,15 +558,50 @@ async function showJobInfo(event, jobId) {
     modal.style.display = 'flex';
     try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch(`${API_BASE_URL}/jobpostings/${jobId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-        if (!response.ok) throw new Error('Không thể tải thông tin.');
-        const job = await response.json();
+        // Gọi song song cả hai API lấy job và detail
+        const [jobRes, detailRes] = await Promise.all([
+            fetch(`${API_BASE_URL}/jobpostings/${jobId}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+            fetch(`${API_BASE_URL}/jobpostings/${jobId}/details`, { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        if (!jobRes.ok) throw new Error('Không thể tải thông tin.');
+        const job = await jobRes.json();
+        let detail = null;
+        if (detailRes.ok) detail = await detailRes.json();
+        // Kỹ năng
+        let skillsArr = [];
+        if (job.skills) {
+            try { skillsArr = Array.isArray(job.skills) ? job.skills : JSON.parse(job.skills); } catch (e) {}
+        }
+        // Hiển thị layout chi tiết giống ứng viên nhưng không có nút ứng tuyển
         modalBody.innerHTML = `
-            <p><strong>Vị trí:</strong> ${job.jobTitle}</p>
-            <p><strong>Địa điểm:</strong> ${job.location}</p>
-            <p><strong>Lương:</strong> ${job.salaryNegotiable ? 'Thoả thuận' : 'Cố định'}</p>
-            <p><strong>Kỹ năng:</strong> ${job.skills && JSON.parse(job.skills).length > 0 ? JSON.parse(job.skills).join(', ') : 'Không yêu cầu'}</p>
-            <p><strong>Ngày cập nhật:</strong> ${new Date(job.updatedAt).toLocaleDateString('vi-VN')}</p>`;
+            <div style='background:#fff;border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,0.10);padding:32px 32px 24px 32px;max-width:600px;margin:auto;overflow-wrap:break-word;word-break:break-word;min-width:0;'>
+                <h2 style='color:#1976d2;font-size:2rem;font-weight:700;margin-bottom:8px;'>${job.jobTitle || 'N/A'}</h2>
+                <div style='color:#c62828;font-weight:600;margin-bottom:2px;'>${job.companyName || 'N/A'}</div>
+                <div style='color:#444;margin-bottom:8px;'>${job.location || 'N/A'}</div>
+                <div style='margin-bottom:10px;'>
+                    ${(skillsArr && skillsArr.length > 0) ? skillsArr.map(skill => `<span style='display:inline-block;background:#eee;border-radius:16px;padding:4px 12px;margin:2px 4px 2px 0;font-size:13px;'>${skill}</span>`).join('') : ''}
+                </div>
+                <div style='font-size:1.05rem;display:flex;flex-wrap:wrap;gap:18px;white-space:normal;align-items:center;min-width:0;'>
+                    <span style='min-width:0;word-break:break-word;'><b>Mức lương:</b> ${(detail && detail.salaryDescription) ? detail.salaryDescription : (job.salaryNegotiable ? 'Thỏa thuận' : 'N/A')}</span>
+                    <span style='min-width:0;word-break:break-word;'><b>Cấp bậc:</b> ${(detail && detail.jobLevel) ? detail.jobLevel : 'N/A'}</span>
+                    <span style='min-width:0;word-break:break-word;'><b>Hình thức:</b> ${(detail && detail.workFormat) ? detail.workFormat : 'N/A'}</span>
+                    <span style='min-width:0;word-break:break-word;'><b>Hợp đồng:</b> ${(detail && detail.contractType) ? detail.contractType : 'N/A'}</span>
+                </div>
+                <hr style='margin:18px 0 12px 0;'>
+                <div style='margin-bottom:12px;'>
+                    <div style='color:#d32f2f;font-weight:700;font-size:1.15rem;margin-bottom:6px;'><i class="fas fa-briefcase"></i> Trách nhiệm công việc</div>
+                    <div>${formatJsonToList(detail && detail.responsibilities)}</div>
+                </div>
+                <div style='margin-bottom:12px;'>
+                    <div style='color:#222;font-weight:700;font-size:1.12rem;margin-bottom:6px;'><i class="fas fa-tools"></i> Kỹ năng & Chuyên môn</div>
+                    <div>${formatJsonToList(detail && detail.requiredSkills)}</div>
+                </div>
+                <div style='margin-bottom:12px;'>
+                    <div style='color:#388e3c;font-weight:700;font-size:1.12rem;margin-bottom:6px;'><i class="fas fa-gift"></i> Phúc lợi</div>
+                    <div>${formatJsonToList(detail && detail.benefits)}</div>
+                </div>
+            </div>
+        `;
     } catch (error) {
         modalBody.innerHTML = `<p style="color: red;">${error.message}</p>`;
     }
@@ -576,3 +640,41 @@ document.body.onclick = (e) => {
         menu.classList.remove('active');
     }
 };
+
+// Helper: formatJsonToList chuyển JSON array hoặc chuỗi thành danh sách <li>
+function formatJsonToList(jsonString) {
+  if (!jsonString) return "<li>N/A</li>";
+  try {
+    // Nếu là JSON array
+    const items = JSON.parse(jsonString);
+    if (Array.isArray(items) && items.length > 0) {
+      return items.map((item) => `<li>${item}</li>`).join("");
+    }
+    // Nếu là chuỗi, tách theo dòng
+    if (typeof items === "string") {
+      return items.split(/\r?\n/).filter(line => line.trim() !== "").map(line => `<li>${line}</li>`).join("");
+    }
+    return "<li>N/A</li>";
+  } catch (e) {
+    // Nếu không phải JSON hợp lệ, tách theo dòng
+    return jsonString.split(/\r?\n/).filter(line => line.trim() !== "").map(line => `<li>${line}</li>`).join("");
+  }
+}
+
+function setUserAvatar(username) {
+  const avatarEl = document.querySelector('.user-avatar');
+  if (avatarEl) {
+    avatarEl.textContent = username ? username.charAt(0).toUpperCase() : '?';
+    avatarEl.style.background = '#1976d2';
+    avatarEl.style.color = '#fff';
+    avatarEl.style.display = 'flex';
+    avatarEl.style.alignItems = 'center';
+    avatarEl.style.justifyContent = 'center';
+    avatarEl.style.fontWeight = 'bold';
+    avatarEl.style.fontSize = '1.15em';
+    avatarEl.style.width = '32px';
+    avatarEl.style.height = '32px';
+    avatarEl.style.borderRadius = '50%';
+    avatarEl.style.userSelect = 'none';
+  }
+}

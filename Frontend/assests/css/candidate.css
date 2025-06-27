@@ -78,14 +78,18 @@ body {
 }
 
 .user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  object-fit: cover;
-  background: #eee;
-  border: 1.5px solid #e3e3e3;
-  margin-right: 2px;
-  transition: box-shadow 0.18s;
+  background: #1976d2;
+  color: #fff;
+  font-size: 1.25em;
+  font-weight: bold;
+  user-select: none;
+  overflow: hidden;
 }
 
 .user-avatar:hover {
@@ -511,4 +515,31 @@ main {
   height: 500px;
   border: 1px solid #ddd;
   border-radius: 8px;
+}
+
+/* ======= STATE FILTER BUTTONS ======= */
+.state-filter-btn {
+  background: #f7faff;
+  color: #1976d2;
+  border: 1.5px solid #1976d2;
+  border-radius: 8px;
+  padding: 7px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 2px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, border-color 0.18s;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.04);
+  outline: none;
+}
+.state-filter-btn:hover {
+  background: #e3f0fc;
+  color: #1256a3;
+  border-color: #1256a3;
+}
+.state-filter-btn.active {
+  background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+  color: #fff;
+  border-color: #1976d2;
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.10);
 }

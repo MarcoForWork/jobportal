@@ -52,7 +52,6 @@ function openCandidateTab(evt, tabName) {
 
 function logout(message = "Bạn đã đăng xuất.") {
   localStorage.removeItem("authToken");
-  alert(message);
   window.location.href = "login.html";
 }
 
@@ -181,29 +180,17 @@ async function showJobDetail(jobId) {
 
 async function applyToJob() {
   if (!currentUser || !selectedJobForDetail) {
-    alert("Lỗi: Không có thông tin người dùng hoặc công việc.");
     return;
   }
-
-  // (1) Kiểm tra user đã có CV chưa
   if (!userHasResume) {
-    alert(
-      "Bạn cần tải CV lên trước khi ứng tuyển. Vui lòng chuyển đến tab 'CV của tôi'."
-    );
-    closeJobDetailModal(); // Đóng modal chi tiết công việc
-    openCandidateTab(null, "MyResume"); // Chuyển hướng đến trang upload CV
+    closeJobDetailModal();
+    openCandidateTab(null, "MyResume");
     const myResumeTabButton = document.querySelector(
       '.tab-link[onclick*="MyResume"]'
     );
     if (myResumeTabButton) myResumeTabButton.classList.add("active");
     return;
   }
-
-  const confirmApply = confirm(
-    `Bạn có chắc chắn muốn ứng tuyển vào vị trí "${selectedJobForDetail.jobTitle}" không?`
-  );
-  if (!confirmApply) return;
-
   const token = localStorage.getItem("authToken");
   try {
     const response = await fetch(
@@ -216,30 +203,18 @@ async function applyToJob() {
         },
       }
     );
-
     if (response.ok) {
-      alert("Bạn đã ứng tuyển thành công!");
-      closeJobDetailModal(); // Đóng modal
-      await loadUserJobApplications(); // Tải lại danh sách đơn ứng tuyển để cập nhật userAppliedJobIds
-      await loadAllJobPostings(); // Tải lại danh sách việc làm để ẩn các công việc đã ứng tuyển
-      openCandidateTab(null, "MyApplications"); // Chuyển sang tab đơn ứng tuyển
+      closeJobDetailModal();
+      await loadUserJobApplications();
+      await loadAllJobPostings();
+      openCandidateTab(null, "MyApplications");
       const myApplicationsTabButton = document.querySelector(
         '.tab-link[onclick*="MyApplications"]'
       );
       if (myApplicationsTabButton)
         myApplicationsTabButton.classList.add("active");
-    } else if (response.status === 409) {
-      // Conflict, already applied
-      alert("Bạn đã ứng tuyển vào công việc này rồi.");
-    } else {
-      throw new Error(
-        (await response.text()) || "Lỗi không xác định khi ứng tuyển."
-      );
     }
-  } catch (error) {
-    alert("Không thể ứng tuyển: " + error.message);
-    console.error("Lỗi ứng tuyển:", error);
-  }
+  } catch (error) {}
 }
 
 // =================================================================
@@ -378,13 +353,16 @@ function renderApplications(applications) {
     .join("");
 }
 
+// 1. Lưu lại danh sách đơn ứng tuyển đã fetch
+let allUserApplications = [];
+
+// 2. Sửa loadUserJobApplications để lưu lại allUserApplications và render theo filter
 async function loadUserJobApplications() {
   if (!currentUser) return;
   const token = localStorage.getItem("authToken");
   const tbody = document.getElementById("applicationList");
   tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#888;">Đang tải đơn ứng tuyển...</td></tr>`;
-  userAppliedJobIds.clear(); // Xóa các jobId đã lưu trước đó
-
+  userAppliedJobIds.clear();
   try {
     const response = await fetch(
       `${API_BASE_URL}/job-applications/${currentUser.id}`,
@@ -395,57 +373,43 @@ async function loadUserJobApplications() {
     );
     if (!response.ok) throw new Error("Không thể tải đơn ứng tuyển.");
     const applications = await response.json();
-
-    // Lưu trữ các jobId mà người dùng đã ứng tuyển vào Set
+    allUserApplications = applications;
     applications.forEach((app) => {
-      if (app.jobId) {
-        userAppliedJobIds.add(app.jobId);
-      }
+      if (app.jobId) userAppliedJobIds.add(app.jobId);
     });
-
-    renderApplications(applications);
+    filterApplicationsByState();
   } catch (error) {
     console.error("Lỗi tải đơn ứng tuyển:", error);
     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
   }
 }
 
-async function removeJobApplication(applicationId) {
-  if (!currentUser) {
-    alert("Lỗi: Không có thông tin người dùng.");
-    return;
+// 3. Hàm filter và render lại theo trạng thái
+function filterApplicationsByState(state) {
+  if (!state) {
+    // Nếu không truyền thì lấy nút đang active
+    const activeBtn = document.querySelector('.state-filter-btn.active');
+    state = activeBtn ? activeBtn.getAttribute('data-state') : 'ALL';
   }
+  let filtered = allUserApplications;
+  if (state !== "ALL") {
+    filtered = allUserApplications.filter(app => (app.state === state || app.state === state.toUpperCase()));
+  }
+  renderApplications(filtered);
+}
 
-  const confirmDelete = confirm(
-    "Bạn có chắc chắn muốn xóa đơn ứng tuyển này không?"
-  );
-  if (!confirmDelete) return;
-
+async function removeJobApplication(applicationId) {
   const token = localStorage.getItem("authToken");
   try {
     const response = await fetch(
       `${API_BASE_URL}/job-applications/${currentUser.id}/${applicationId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
     );
-
     if (response.ok) {
-      alert("Đơn ứng tuyển đã được xóa thành công.");
-      await loadUserJobApplications(); // Tải lại danh sách đơn ứng tuyển để cập nhật userAppliedJobIds
-      await loadAllJobPostings(); // Tải lại danh sách việc làm để hiển thị lại công việc nếu cần
-    } else {
-      throw new Error(
-        (await response.text()) || "Lỗi không xác định khi xóa đơn ứng tuyển."
-      );
+      await loadUserJobApplications();
+      await loadAllJobPostings();
     }
-  } catch (error) {
-    alert("Không thể xóa đơn ứng tuyển: " + error.message);
-    console.error("Lỗi xóa đơn ứng tuyển:", error);
-  }
+  } catch (error) {}
 }
 
 async function loadAllJobPostings() {
@@ -550,6 +514,7 @@ async function initializeApp() {
 
   currentUser = { id: decodedToken.userId, username: decodedToken.sub };
   document.getElementById("usernameDisplay").textContent = currentUser.username;
+  setUserAvatar(currentUser.username);
 
   // Mở tab "Jobs" mặc định khi tải trang
   const firstTab = document.querySelector('.tab-link[onclick*="Jobs"]');
@@ -561,6 +526,38 @@ async function initializeApp() {
   await checkUserResume(); // Kiểm tra CV ngay khi khởi tạo
   await loadUserJobApplications(); // Tải đơn ứng tuyển trước để có danh sách các jobId đã ứng tuyển
   await loadAllJobPostings(); // Tải danh sách công việc
+
+  // Thêm dropdown filter vào trước bảng đơn ứng tuyển
+  const appList = document.getElementById("applicationList");
+  if (appList && !document.getElementById("applicationStateBtnFilter")) {
+    const filterDiv = document.createElement("div");
+    filterDiv.id = "applicationStateBtnFilter";
+    filterDiv.style = "margin-bottom:18px;display:flex;align-items:center;gap:14px;justify-content:flex-start;flex-wrap:wrap;";
+    filterDiv.innerHTML = `
+      <span style='font-weight:600;font-size:1.08rem;display:flex;align-items:center;gap:6px;'>
+        <i class='fas fa-filter' style='color:#1976d2;font-size:1.15em;'></i> Trạng thái:
+      </span>
+      <button type='button' class='state-filter-btn active' data-state='ALL'>Tất cả</button>
+      <button type='button' class='state-filter-btn' data-state='Pending'>Chờ duyệt</button>
+      <button type='button' class='state-filter-btn' data-state='Accepted'>Đã nhận</button>
+      <button type='button' class='state-filter-btn' data-state='Rejected'>Đã từ chối</button>
+    `;
+    const filterBox = document.getElementById("applicationFilterBox");
+    if (filterBox) {
+      filterBox.innerHTML = "";
+      filterBox.appendChild(filterDiv);
+    } else {
+      appList.parentElement.insertBefore(filterDiv, appList);
+    }
+    // Gán sự kiện cho các nút
+    filterDiv.querySelectorAll('.state-filter-btn').forEach(btn => {
+      btn.onclick = function() {
+        filterDiv.querySelectorAll('.state-filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        filterApplicationsByState(this.getAttribute('data-state'));
+      };
+    });
+  }
 }
 
 // Khởi tạo ứng dụng khi DOM đã sẵn sàng
@@ -636,3 +633,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+function setUserAvatar(username) {
+  const avatarEl = document.querySelector('.user-avatar');
+  if (avatarEl) {
+    avatarEl.textContent = username ? username.charAt(0).toUpperCase() : '?';
+    avatarEl.style.background = '#1976d2';
+    avatarEl.style.color = '#fff';
+    avatarEl.style.display = 'flex';
+    avatarEl.style.alignItems = 'center';
+    avatarEl.style.justifyContent = 'center';
+    avatarEl.style.fontWeight = 'bold';
+    avatarEl.style.fontSize = '1.15em';
+    avatarEl.style.width = '32px';
+    avatarEl.style.height = '32px';
+    avatarEl.style.borderRadius = '50%';
+    avatarEl.style.userSelect = 'none';
+  }
+}
