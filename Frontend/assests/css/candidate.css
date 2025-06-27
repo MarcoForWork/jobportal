@@ -210,6 +210,7 @@ main {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -244,7 +245,8 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  text-decoration: none; /* For button acting as link */
+  text-decoration: none;
+  /* For button acting as link */
 }
 
 .btn.main-btn {
@@ -277,7 +279,8 @@ main {
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
   border-radius: 12px;
-  overflow: hidden; /* Ensures rounded corners apply to content */
+  overflow: hidden;
+  /* Ensures rounded corners apply to content */
 }
 
 .data-table th,
@@ -390,24 +393,33 @@ main {
 
 /* Modal Styles */
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 101; /* Sit on top */
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 101;
+  /* Sit on top */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Black w/ opacity */
   padding-top: 60px;
 }
 
 .modal-content {
   background-color: #fefefe;
-  margin: 5% auto; /* 15% from the top and centered */
+  margin: 5% auto;
+  /* 15% from the top and centered */
   padding: 30px 40px;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 80%;
+  /* Could be more or less, depending on screen size */
   max-width: 900px;
   border-radius: 15px;
   position: relative;
@@ -420,6 +432,7 @@ main {
     opacity: 0;
     transform: translateY(-50px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -511,4 +524,107 @@ main {
   height: 500px;
   border: 1px solid #ddd;
   border-radius: 8px;
+}
+
+/* ======= NOTIFICATION BELL STYLES (PHẦN MỚI THÊM) ======= */
+.notification-bell {
+  position: relative;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.notification-bell .fa-bell {
+  font-size: 1.4em;
+  color: #555;
+  padding: 5px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  line-height: 1;
+  border: 1px solid #fff;
+}
+
+.notification-panel {
+  display: none;
+  /* Hidden by default */
+  position: absolute;
+  top: 120%;
+  right: -20px;
+  width: 380px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  animation: dropdownFade 0.16s;
+}
+
+.notification-bell.active .notification-panel {
+  display: block;
+  /* Show when active */
+}
+
+.notification-header {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #f9f9f9;
+}
+
+.notification-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+#notificationList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#notificationList li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  transition: background-color 0.2s;
+}
+
+#notificationList li:last-child {
+  border-bottom: none;
+}
+
+#notificationList li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+#notificationList li:hover {
+  background-color: #f5f5f5;
+}
+
+/* Định dạng cho thông báo đã đọc */
+#notificationList li.is-read a {
+  opacity: 0.7;
+}
+
+#notificationList li.is-read p {
+  font-weight: 400 !important;
+}
+
+#notificationList li small {
+  font-size: 0.8em;
+  color: #888;
 }

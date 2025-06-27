@@ -1,14 +1,12 @@
 package com.hctt.is208.controller;
 
-import com.hctt.is208.model.Notification;
-import com.hctt.is208.model.User;
+import com.hctt.is208.DTO.NotificationDTO;
 import com.hctt.is208.repository.NotificationRepository;
-import com.hctt.is208.repository.UserRepository;
+import com.hctt.is208.service.NotificationService; // Import service mới
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -18,23 +16,20 @@ public class NotificationController {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    // Tiêm service mới vào
     @Autowired
-    private UserRepository userRepository; // Đảm bảo rằng bạn đã có UserRepository
+    private NotificationService notificationService;
 
-
+    // API cũ để lấy danh sách thông báo
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Notification>> getUserNotifications(@PathVariable String userId) {
-        // Tìm người dùng dựa trên ID
-        User user = userRepository.findById(userId)
-                .orElse(null);
-
-        // Nếu không tìm thấy người dùng, trả về một danh sách rỗng
-        if (user == null) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-
-        // Nếu tìm thấy, lấy tất cả thông báo của người dùng đó và trả về
-        List<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user);
+    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@PathVariable String userId) {
+        List<NotificationDTO> notifications = notificationRepository.findNotificationsByUserId(userId);
         return ResponseEntity.ok(notifications);
+    }
+
+    @PutMapping("/{notificationId}/read")
+    public ResponseEntity<Void> markNotificationAsRead(@PathVariable Long notificationId) {
+        notificationService.markAsRead(notificationId);
+        return ResponseEntity.ok().build(); // Trả về 200 OK và không có body
     }
 }
