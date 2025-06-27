@@ -108,6 +108,31 @@ function formatJsonToList(jsonString) {
 // ==================== LOGIC QUẢN LÝ VIỆC LÀM =====================
 // =================================================================
 
+function normalizeSkills(skills) {
+  let arr = [];
+  if (!skills) return arr;
+  if (Array.isArray(skills)) {
+    arr = skills;
+  } else if (typeof skills === 'string') {
+    let s = skills.trim();
+    // Try to parse JSON array
+    if (s.startsWith('[') && s.endsWith(']')) {
+      try {
+        arr = JSON.parse(s);
+      } catch {
+        // fallback below
+      }
+    }
+    if (arr.length === 0) {
+      // Remove brackets/quotes, split by comma
+      s = s.replace(/\[|\]|"|'/g, '');
+      arr = s.split(',').map(x => x.trim()).filter(x => x);
+    }
+  }
+  // Remove any remaining quotes/brackets from each skill
+  return arr.map(skill => String(skill).replace(/\[|\]|"|'/g, '').trim()).filter(x => x);
+}
+
 function renderJobCards(jobs) {
   const container = document.getElementById("jobListings");
   if (!jobs || jobs.length === 0) {
@@ -465,31 +490,10 @@ function renderHotJobs(jobs) {
   // Nếu vẫn không có, fallback lấy 3 job đầu tiên bất kỳ
   if (top3.length === 0) top3 = jobs.slice(0, 3);
   grid.innerHTML = top3.map(job => {
-    let skillsArr = [];
-    if (job.skills) {
-      try {
-        if (Array.isArray(job.skills)) {
-          skillsArr = job.skills;
-        } else if (typeof job.skills === 'string') {
-          // Try to parse stringified array, fallback to split by comma
-          if (job.skills.trim().startsWith('[')) {
-            skillsArr = JSON.parse(job.skills);
-          } else {
-            skillsArr = job.skills.split(',');
-          }
-        }
-      } catch (e) {
-        // Fallback: split by comma
-        skillsArr = job.skills.split(',');
-      }
-    }
+    const skillsArr = normalizeSkills(job.skills);
     let tagsHtml = '';
-    if (skillsArr && Array.isArray(skillsArr) && skillsArr.length > 0) {
-      tagsHtml = skillsArr.slice(0, 3).map(skill => {
-        // Remove quotes, brackets, and trim
-        let cleanSkill = String(skill).replace(/^\s*\[?"?|"?\]?\s*$/g, '').trim();
-        return `<span class='tag'>${cleanSkill}</span>`;
-      }).join("");
+    if (skillsArr.length > 0) {
+      tagsHtml = skillsArr.slice(0, 3).map(skill => `<span class='tag'>${skill}</span>`).join("");
       if (skillsArr.length > 3) {
         tagsHtml += `<span class='tag'>+${skillsArr.length - 3} more</span>`;
       }
@@ -542,20 +546,28 @@ function showJobsByCompany(companyName) {
     grid.innerHTML = `<p class="loading-message">Không có việc làm nào cho công ty này.</p>`;
   } else {
     grid.innerHTML = `<h3 style='color:#1976d2;margin-bottom:10px;'>Tất cả việc làm tại <span style='color:#d32f2f;'>${companyName}</span></h3>` +
-      jobs.map(job => `
-        <div class="company-card">
-          <div class="card-header">
-            <h3 class="job-title">${job.jobTitle || 'Chưa cập nhật'}</h3>
-            <span class="company-name">${job.companyName || 'Chưa cập nhật'}</span>
+      jobs.map(job => {
+        const skillsArr = normalizeSkills(job.skills);
+        let tagsHtml = '';
+        if (skillsArr.length > 0) {
+          tagsHtml = skillsArr.slice(0, 3).map(skill => `<span class='tag'>${skill}</span>`).join("");
+          if (skillsArr.length > 3) {
+            tagsHtml += `<span class='tag'>+${skillsArr.length - 3} more</span>`;
+          }
+        }
+        return `
+          <div class="company-card">
+            <div class="card-header">
+              <h3 class="job-title">${job.jobTitle || 'Chưa cập nhật'}</h3>
+              <span class="company-name">${job.companyName || 'Chưa cập nhật'}</span>
+            </div>
+            <div class="location"><i class="fas fa-map-marker-alt"></i> ${job.location || 'Chưa cập nhật'}</div>
+            <div class="salary"><i class="fas fa-money-bill-wave"></i> ${job.salaryNegotiable ? "Thỏa thuận" : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>
+            <div class="tags">${tagsHtml}</div>
+            <button class="btn main-btn" onclick="showJobDetail(${job.jobId})">Xem chi tiết</button>
           </div>
-          <div class="location"><i class="fas fa-map-marker-alt"></i> ${job.location || 'Chưa cập nhật'}</div>
-          <div class="salary"><i class="fas fa-money-bill-wave"></i> ${job.salaryNegotiable ? "Thỏa thuận" : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>
-          <div class="tags">
-            ${(Array.isArray(job.skills) ? job.skills : (job.skills ? JSON.parse(job.skills) : [])).map(skill => `<span class="tag">${skill}</span>`).join("")}
-          </div>
-          <button class="btn main-btn" onclick="showJobDetail(${job.jobId})">Xem chi tiết</button>
-        </div>
-      `).join("");
+        `;
+      }).join("");
   }
   // Hide popular companies section
   const popSec = document.querySelector('.popular-companies-section');
@@ -852,20 +864,28 @@ function renderSearchResults(jobs) {
   if (!jobs || jobs.length === 0) {
     grid.innerHTML = `<p class='loading-message'>Không tìm thấy công việc phù hợp.</p>`;
   } else {
-    grid.innerHTML = jobs.map(job => `
-      <div class='company-card'>
-        <div class='card-header'>
-          <h3 class='job-title'>${job.jobTitle || 'Chưa cập nhật'}</h3>
-          <span class='company-name'>${job.companyName || 'Chưa cập nhật'}</span>
+    grid.innerHTML = jobs.map(job => {
+      const skillsArr = normalizeSkills(job.skills);
+      let tagsHtml = '';
+      if (skillsArr.length > 0) {
+        tagsHtml = skillsArr.slice(0, 3).map(skill => `<span class='tag'>${skill}</span>`).join("");
+        if (skillsArr.length > 3) {
+          tagsHtml += `<span class='tag'>+${skillsArr.length - 3} more</span>`;
+        }
+      }
+      return `
+        <div class='company-card'>
+          <div class='card-header'>
+            <h3 class='job-title'>${job.jobTitle || 'Chưa cập nhật'}</h3>
+            <span class='company-name'>${job.companyName || 'Chưa cập nhật'}</span>
+          </div>
+          <div class='location'><i class='fas fa-map-marker-alt'></i> ${job.location || 'Chưa cập nhật'}</div>
+          <div class='salary'><i class='fas fa-money-bill-wave'></i> ${job.salaryNegotiable ? 'Thỏa thuận' : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>
+          <div class='tags'>${tagsHtml}</div>
+          <button class='btn main-btn' onclick='showJobDetail(${job.jobId})'>Xem chi tiết</button>
         </div>
-        <div class='location'><i class='fas fa-map-marker-alt'></i> ${job.location || 'Chưa cập nhật'}</div>
-        <div class='salary'><i class='fas fa-money-bill-wave'></i> ${job.salaryNegotiable ? 'Thỏa thuận' : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>
-        <div class='tags'>
-          ${(Array.isArray(job.skills) ? job.skills : (job.skills ? JSON.parse(job.skills) : [])).map(skill => `<span class='tag'>${skill}</span>`).join("")}
-        </div>
-        <button class='btn main-btn' onclick='showJobDetail(${job.jobId})'>Xem chi tiết</button>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
   section.style.display = '';
 }
