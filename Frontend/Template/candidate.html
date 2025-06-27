@@ -60,37 +60,25 @@
 
           <div id="Jobs" class="tab-content">
             <div class="section-header">
-              <h2>
-                <i class="fas fa-magnifying-glass"></i> Danh sách việc làm
-              </h2>
-              <div
-                style="
-                  margin: 12px 0;
-                  display: flex;
-                  gap: 8px;
-                  align-items: center;
-                "
-              >
-                <input
-                  id="jobSearchInput"
-                  type="text"
-                  placeholder="Tìm kiếm công việc..."
-                  style="
-                    padding: 6px 12px;
-                    border-radius: 4px;
-                    border: 1px solid #ccc;
-                    min-width: 220px;
-                  "
-                />
-                <button id="jobSearchBtn" class="btn main-btn" type="button">
-                  <i class="fas fa-search"></i> Tìm kiếm
-                </button>
-              </div>
+              <input
+                id="jobSearchInput"
+                type="text"
+                placeholder="Tìm kiếm công việc..."
+                style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; min-width: 220px; margin-bottom: 18px;"
+              />
             </div>
-            <div id="jobListings" class="job-card-container">
-              <p style="text-align: center; color: #888">
-                Đang tải việc làm...
-              </p>
+            <section class="hot-jobs-section">
+              <h2><i class="fas fa-fire hot-jobs-icon"></i> Hot Jobs</h2>
+              <div id="hotJobsGrid" class="job-list"></div>
+            </section>
+            <section class="popular-companies-section">
+              <h2><i class="fas fa-star popular-companies-icon"></i> Popular Companies</h2>
+              <div style="font-size:0.98em;color:#888;margin-bottom:8px;">Nhấn vào tên công ty để xem tất cả việc làm của công ty đó.</div>
+              <div id="popularCompaniesGrid" class="job-list"></div>
+            </section>
+            <div id="searchResultsSection" style="display:none;">
+              <h2><i class="fas fa-search"></i> Kết quả tìm kiếm</h2>
+              <div id="searchResultsGrid" class="job-list"></div>
             </div>
           </div>
 

@@ -48,6 +48,21 @@ function openCandidateTab(evt, tabName) {
   if (evt) {
     evt.currentTarget.className += " active";
   }
+  // Reset Jobs tab view if switching to Jobs
+  if (tabName === 'Jobs') {
+    // Show Hot Jobs title
+    const hotJobsSection = document.querySelector('.hot-jobs-section h2');
+    if (hotJobsSection) hotJobsSection.style.display = '';
+    // Show popular companies section
+    const popSec = document.querySelector('.popular-companies-section');
+    if (popSec) popSec.style.display = '';
+    // Hide back button
+    const backBtn = document.getElementById('backToHotPopularBtn');
+    if (backBtn) backBtn.style.display = 'none';
+    // Render hot jobs and popular companies again
+    renderHotJobs(allJobsCache);
+    renderPopularCompanies(allJobsCache);
+  }
 }
 
 function logout(message = "Bạn đã đăng xuất.") {
@@ -61,7 +76,7 @@ function closeJobDetailModal() {
 }
 
 function formatJsonToList(jsonString) {
-  if (!jsonString) return "<li>N/A</li>";
+  if (!jsonString) return "<li>Chưa cập nhật</li>";
   try {
     // Nếu là JSON array
     const items = JSON.parse(jsonString);
@@ -70,12 +85,22 @@ function formatJsonToList(jsonString) {
     }
     // Nếu là chuỗi, tách theo dòng
     if (typeof items === "string") {
-      return items.split(/\r?\n/).filter(line => line.trim() !== "").map(line => `<li>${line}</li>`).join("");
+      const lines = items.split(/\r?\n/).filter(line => line.trim() !== "");
+      if (lines.length > 0) {
+        return lines.map(line => `<li>${line}</li>`).join("");
+      } else {
+        return "<li>Chưa cập nhật</li>";
+      }
     }
-    return "<li>N/A</li>";
+    return "<li>Chưa cập nhật</li>";
   } catch (e) {
     // Nếu không phải JSON hợp lệ, tách theo dòng
-    return jsonString.split(/\r?\n/).filter(line => line.trim() !== "").map(line => `<li>${line}</li>`).join("");
+    const lines = jsonString.split(/\r?\n/).filter(line => line.trim() !== "");
+    if (lines.length > 0) {
+      return lines.map(line => `<li>${line}</li>`).join("");
+    } else {
+      return "<li>Chưa cập nhật</li>";
+    }
   }
 }
 
@@ -86,32 +111,23 @@ function formatJsonToList(jsonString) {
 function renderJobCards(jobs) {
   const container = document.getElementById("jobListings");
   if (!jobs || jobs.length === 0) {
-    container.innerHTML = `<p style="text-align:center;color:#888;">Không có việc làm nào được tìm thấy.</p>`;
+    container.innerHTML = `<p class="loading-message">Không có việc làm nào được tìm thấy.</p>`;
     return;
   }
-  container.innerHTML = jobs
-    .map(
-      (job) => `
-      <div class="job-card" onclick="showJobDetail(${job.jobId})">
-        <h3>${job.jobTitle}</h3>
-        <p class="company-name">${job.companyName ? job.companyName : "N/A"}</p>
-        <p class="location"><i class="fas fa-map-marker-alt"></i> ${
-          job.location
-        }</p>
-        <p class="salary"><i class="fas fa-money-bill-wave"></i> ${
-          job.salaryNegotiable
-            ? "Thỏa thuận"
-            : job.jobPostingDetail
-            ? job.jobPostingDetail.salaryDescription
-            : "N/A"
-        }</p>
-        <p class="posted-date">Đăng ngày: ${new Date(
-          job.postedDate
-        ).toLocaleDateString("vi-VN")}</p>
+  container.innerHTML = jobs.map(job => `
+    <div class="company-card">
+      <div class="card-header">
+        <h3 class="job-title">${job.jobTitle || 'Chưa cập nhật'}</h3>
+        <span class="company-name">${job.companyName || 'Chưa cập nhật'}</span>
       </div>
-    `
-    )
-    .join("");
+      <div class="location"><i class="fas fa-map-marker-alt"></i> ${job.location || 'Chưa cập nhật'}</div>
+      <div class="salary"><i class="fas fa-money-bill-wave"></i> ${job.salaryNegotiable ? "Thỏa thuận" : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>
+      <div class="tags">
+        ${(Array.isArray(job.skills) ? job.skills : (job.skills ? JSON.parse(job.skills) : [])).map(skill => `<span class="tag">${skill}</span>`).join("")}
+      </div>
+      <button class="btn main-btn" onclick="showJobDetail(${job.jobId})">Xem chi tiết</button>
+    </div>
+  `).join("");
 }
 
 async function showJobDetail(jobId) {
@@ -136,9 +152,9 @@ async function showJobDetail(jobId) {
     }
     selectedJobForDetail = jobData; // Lưu chi tiết công việc
     // Hiển thị các trường từ jobData
-    document.getElementById("jobDetailTitle").textContent = jobData.jobTitle || "N/A";
-    document.getElementById("jobDetailCompany").textContent = jobData.companyName || "N/A";
-    document.getElementById("jobDetailLocation").textContent = jobData.location || "N/A";
+    document.getElementById("jobDetailTitle").textContent = jobData.jobTitle || "Chưa cập nhật";
+    document.getElementById("jobDetailCompany").textContent = jobData.companyName || "Chưa cập nhật";
+    document.getElementById("jobDetailLocation").textContent = jobData.location || "Chưa cập nhật";
     // Hiển thị tag kỹ năng
     const tagContainer = document.getElementById("jobDetailTags");
     tagContainer.innerHTML = "";
@@ -155,21 +171,21 @@ async function showJobDetail(jobId) {
     }
     // Ưu tiên lấy detail nếu có, fallback sang jobData nếu không
     if (detailData) {
-      document.getElementById("jobDetailSalaryDescription").textContent = detailData.salaryDescription || (jobData.salaryNegotiable ? "Thỏa thuận" : "N/A");
-      document.getElementById("jobDetailJobLevel").textContent = detailData.jobLevel || "N/A";
-      document.getElementById("jobDetailWorkFormat").textContent = detailData.workFormat || "N/A";
-      document.getElementById("jobDetailContractType").textContent = detailData.contractType || "N/A";
+      document.getElementById("jobDetailSalaryDescription").textContent = detailData.salaryDescription || (jobData.salaryNegotiable ? "Thỏa thuận" : "Chưa cập nhật");
+      document.getElementById("jobDetailJobLevel").textContent = detailData.jobLevel || "Chưa cập nhật";
+      document.getElementById("jobDetailWorkFormat").textContent = detailData.workFormat || "Chưa cập nhật";
+      document.getElementById("jobDetailContractType").textContent = detailData.contractType || "Chưa cập nhật";
       document.getElementById("jobDetailResponsibilities").innerHTML = formatJsonToList(detailData.responsibilities);
       document.getElementById("jobDetailSkills").innerHTML = formatJsonToList(detailData.requiredSkills);
       document.getElementById("jobDetailBenefits").innerHTML = formatJsonToList(detailData.benefits);
     } else {
-      document.getElementById("jobDetailSalaryDescription").textContent = jobData.salaryNegotiable ? "Thỏa thuận" : "N/A";
-      document.getElementById("jobDetailJobLevel").textContent = "N/A";
-      document.getElementById("jobDetailWorkFormat").textContent = "N/A";
-      document.getElementById("jobDetailContractType").textContent = "N/A";
-      document.getElementById("jobDetailResponsibilities").innerHTML = "";
-      document.getElementById("jobDetailSkills").innerHTML = "";
-      document.getElementById("jobDetailBenefits").innerHTML = "";
+      document.getElementById("jobDetailSalaryDescription").textContent = jobData.salaryNegotiable ? "Thỏa thuận" : "Chưa cập nhật";
+      document.getElementById("jobDetailJobLevel").textContent = "Chưa cập nhật";
+      document.getElementById("jobDetailWorkFormat").textContent = "Chưa cập nhật";
+      document.getElementById("jobDetailContractType").textContent = "Chưa cập nhật";
+      document.getElementById("jobDetailResponsibilities").innerHTML = "<li>Chưa cập nhật</li>";
+      document.getElementById("jobDetailSkills").innerHTML = "<li>Chưa cập nhật</li>";
+      document.getElementById("jobDetailBenefits").innerHTML = "<li>Chưa cập nhật</li>";
     }
     document.getElementById("jobDetailModal").style.display = "block"; // Show the modal
   } catch (error) {
@@ -412,6 +428,163 @@ async function removeJobApplication(applicationId) {
   } catch (error) {}
 }
 
+// Render Hot Jobs (top 5 highest salary jobs)
+function renderHotJobs(jobs) {
+  const grid = document.getElementById('hotJobsGrid');
+  if (!grid) return;
+  if (!jobs || jobs.length === 0) {
+    grid.innerHTML = `<p class="loading-message">Không có hot job nào.</p>`;
+    return;
+  }
+  // Sắp xếp theo lương (ưu tiên salaryDescription nếu có, loại bỏ lương thỏa thuận)
+  const sorted = [...jobs].filter(job => {
+    // Loại bỏ job lương thỏa thuận
+    if (job.salaryNegotiable) return false;
+    // Chỉ lấy job có lương cụ thể
+    if (job.jobPostingDetail && job.jobPostingDetail.salaryDescription) {
+      const match = job.jobPostingDetail.salaryDescription.match(/\d+/g);
+      return match && parseInt(match[0]) > 0;
+    }
+    return false;
+  }).sort((a, b) => {
+    const getSalary = job => {
+      if (job.jobPostingDetail && job.jobPostingDetail.salaryDescription) {
+        const match = job.jobPostingDetail.salaryDescription.match(/\d+/g);
+        return match ? parseInt(match[0]) : 0;
+      }
+      return 0;
+    };
+    return getSalary(b) - getSalary(a);
+  });
+  // Lấy tối đa 3 job có lương cao nhất (không thỏa thuận)
+  let top3 = sorted.slice(0, 3);
+  // Nếu không có job nào đủ điều kiện, fallback lấy 3 job đầu tiên không thỏa thuận
+  if (top3.length === 0) {
+    top3 = jobs.filter(job => !job.salaryNegotiable).slice(0, 3);
+  }
+  // Nếu vẫn không có, fallback lấy 3 job đầu tiên bất kỳ
+  if (top3.length === 0) top3 = jobs.slice(0, 3);
+  grid.innerHTML = top3.map(job => {
+    let skillsArr = [];
+    if (job.skills) {
+      try {
+        if (Array.isArray(job.skills)) {
+          skillsArr = job.skills;
+        } else if (typeof job.skills === 'string') {
+          // Try to parse stringified array, fallback to split by comma
+          if (job.skills.trim().startsWith('[')) {
+            skillsArr = JSON.parse(job.skills);
+          } else {
+            skillsArr = job.skills.split(',');
+          }
+        }
+      } catch (e) {
+        // Fallback: split by comma
+        skillsArr = job.skills.split(',');
+      }
+    }
+    let tagsHtml = '';
+    if (skillsArr && Array.isArray(skillsArr) && skillsArr.length > 0) {
+      tagsHtml = skillsArr.slice(0, 3).map(skill => {
+        // Remove quotes, brackets, and trim
+        let cleanSkill = String(skill).replace(/^\s*\[?"?|"?\]?\s*$/g, '').trim();
+        return `<span class='tag'>${cleanSkill}</span>`;
+      }).join("");
+      if (skillsArr.length > 3) {
+        tagsHtml += `<span class='tag'>+${skillsArr.length - 3} more</span>`;
+      }
+    }
+    return `
+      <div class=\"company-card\">\n        <div class=\"card-header\">\n          <h3 class=\"job-title\">${job.jobTitle || 'Chưa cập nhật'}</h3>\n          <span class=\"company-name\">${job.companyName || 'Chưa cập nhật'}</span>\n        </div>\n        <div class=\"location\"><i class=\"fas fa-map-marker-alt\"></i> ${job.location || 'Chưa cập nhật'}</div>\n        <div class=\"salary\"><i class=\"fas fa-money-bill-wave\"></i> ${job.salaryNegotiable ? 'Thỏa thuận' : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>\n        <div class=\"tags\">${tagsHtml}</div>\n        <button class=\"btn main-btn\" onclick=\"showJobDetail(${job.jobId})\">Xem chi tiết</button>\n      </div>\n    `;
+  }).join("");
+}
+
+// Render Popular Companies (top 5 companies with most jobs)
+function renderPopularCompanies(jobs) {
+  const grid = document.getElementById('popularCompaniesGrid');
+  if (!grid) return;
+  if (!jobs || jobs.length === 0) {
+    grid.innerHTML = `<p class="loading-message">Không có công ty nổi bật.</p>`;
+    return;
+  }
+  // Đếm số job theo companyName
+  const companyMap = {};
+  jobs.forEach(job => {
+    if (!job.companyName) return;
+    if (!companyMap[job.companyName]) companyMap[job.companyName] = [];
+    companyMap[job.companyName].push(job);
+  });
+  // Sắp xếp theo số lượng job giảm dần
+  const sortedCompanies = Object.entries(companyMap).sort((a, b) => b[1].length - a[1].length).slice(0, 5);
+  grid.innerHTML = sortedCompanies.map(([companyName, jobsArr]) => `
+    <div class="company-card popular-company-card" data-company="${companyName}">
+      <div class="card-header">
+        <span class="company-name">${companyName}</span>
+        <span style="font-size:0.95em;color:#888;">${jobsArr.length} jobs</span>
+      </div>
+      <div class="tags">
+        ${jobsArr.slice(0, 3).map(job => `<span class="tag">${job.jobTitle}</span>`).join("")}
+        ${jobsArr.length > 3 ? `<span class="tag">+${jobsArr.length - 3} more</span>` : ""}
+      </div>
+    </div>
+  `).join("");
+}
+
+// Show all jobs for a company in hotJobsGrid, add back button
+function showJobsByCompany(companyName) {
+  const grid = document.getElementById('hotJobsGrid');
+  if (!grid) return;
+  // Hide Hot Jobs title
+  const hotJobsSection = document.querySelector('.hot-jobs-section h2');
+  if (hotJobsSection) hotJobsSection.style.display = 'none';
+  const jobs = allJobsCache.filter(job => job.companyName === companyName);
+  if (jobs.length === 0) {
+    grid.innerHTML = `<p class="loading-message">Không có việc làm nào cho công ty này.</p>`;
+  } else {
+    grid.innerHTML = `<h3 style='color:#1976d2;margin-bottom:10px;'>Tất cả việc làm tại <span style='color:#d32f2f;'>${companyName}</span></h3>` +
+      jobs.map(job => `
+        <div class="company-card">
+          <div class="card-header">
+            <h3 class="job-title">${job.jobTitle || 'Chưa cập nhật'}</h3>
+            <span class="company-name">${job.companyName || 'Chưa cập nhật'}</span>
+          </div>
+          <div class="location"><i class="fas fa-map-marker-alt"></i> ${job.location || 'Chưa cập nhật'}</div>
+          <div class="salary"><i class="fas fa-money-bill-wave"></i> ${job.salaryNegotiable ? "Thỏa thuận" : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>
+          <div class="tags">
+            ${(Array.isArray(job.skills) ? job.skills : (job.skills ? JSON.parse(job.skills) : [])).map(skill => `<span class="tag">${skill}</span>`).join("")}
+          </div>
+          <button class="btn main-btn" onclick="showJobDetail(${job.jobId})">Xem chi tiết</button>
+        </div>
+      `).join("");
+  }
+  // Hide popular companies section
+  const popSec = document.querySelector('.popular-companies-section');
+  if (popSec) popSec.style.display = 'none';
+  // Show back button
+  let backBtn = document.getElementById('backToHotPopularBtn');
+  if (!backBtn) {
+    backBtn = document.createElement('button');
+    backBtn.id = 'backToHotPopularBtn';
+    backBtn.className = 'btn main-btn';
+    backBtn.style = 'margin: 16px 0 8px 0; display: block;';
+    backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Quay lại';
+    backBtn.onclick = function() {
+      renderHotJobs(allJobsCache);
+      const popSec = document.querySelector('.popular-companies-section');
+      if (popSec) popSec.style.display = '';
+      // Show Hot Jobs title again
+      const hotJobsSection = document.querySelector('.hot-jobs-section h2');
+      if (hotJobsSection) hotJobsSection.style.display = '';
+      backBtn.style.display = 'none';
+    };
+    grid.parentNode.insertBefore(backBtn, grid);
+  } else {
+    backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Quay lại';
+    backBtn.style.display = 'block';
+  }
+}
+
+// Remove renderJobCards and searchJobs logic from loadAllJobPostings
 async function loadAllJobPostings() {
   const token = localStorage.getItem("authToken");
   try {
@@ -438,13 +611,12 @@ async function loadAllJobPostings() {
     jobsToDisplay.forEach((job, idx) => {
       job.jobPostingDetail = details[idx];
     });
-    allJobsCache = jobsToDisplay; // Lưu cache để search
-    // Thêm log kiểm tra dữ liệu
-    console.log("allJobsCache", allJobsCache);
-    allJobsCache.forEach((job, idx) => {
-      console.log(`Job ${idx} - jobPostingDetail:`, job.jobPostingDetail);
-    });
-    renderJobCards(jobsToDisplay);
+    allJobsCache = jobsToDisplay; // Lưu cache để search/filter by company
+    renderHotJobs(jobsToDisplay);
+    renderPopularCompanies(jobsToDisplay);
+    // Hide back button if visible
+    const backBtn = document.getElementById('backToHotPopularBtn');
+    if (backBtn) backBtn.style.display = 'none';
   } catch (error) {
     console.error("Lỗi tải danh sách việc làm:", error);
     document.getElementById(
@@ -558,6 +730,27 @@ async function initializeApp() {
       };
     });
   }
+
+  // Add event delegation for popularCompaniesGrid with debug logs
+  const popGrid = document.getElementById('popularCompaniesGrid');
+  if (popGrid) {
+    console.log('[DEBUG] popularCompaniesGrid event delegation attached');
+    popGrid.addEventListener('click', function(e) {
+      let card = e.target.closest('.popular-company-card');
+      console.log('[DEBUG] Clicked element:', e.target, 'Card:', card);
+      if (card && card.dataset.company) {
+        console.log('[DEBUG] Clicked company:', card.dataset.company);
+        showJobsByCompany(card.dataset.company);
+      }
+    });
+  } else {
+    console.log('[DEBUG] popularCompaniesGrid not found on DOMContentLoaded');
+  }
+
+  // Add hover effect for clickable company cards
+  const style = document.createElement('style');
+  style.innerHTML = `.popular-company-card { cursor: pointer; transition: box-shadow 0.2s; } .popular-company-card:hover { box-shadow: 0 2px 12px #1976d233; background: #f7faff; }`;
+  document.head.appendChild(style);
 }
 
 // Khởi tạo ứng dụng khi DOM đã sẵn sàng
@@ -651,3 +844,81 @@ function setUserAvatar(username) {
     avatarEl.style.userSelect = 'none';
   }
 }
+
+function renderSearchResults(jobs) {
+  const section = document.getElementById('searchResultsSection');
+  const grid = document.getElementById('searchResultsGrid');
+  if (!section || !grid) return;
+  if (!jobs || jobs.length === 0) {
+    grid.innerHTML = `<p class='loading-message'>Không tìm thấy công việc phù hợp.</p>`;
+  } else {
+    grid.innerHTML = jobs.map(job => `
+      <div class='company-card'>
+        <div class='card-header'>
+          <h3 class='job-title'>${job.jobTitle || 'Chưa cập nhật'}</h3>
+          <span class='company-name'>${job.companyName || 'Chưa cập nhật'}</span>
+        </div>
+        <div class='location'><i class='fas fa-map-marker-alt'></i> ${job.location || 'Chưa cập nhật'}</div>
+        <div class='salary'><i class='fas fa-money-bill-wave'></i> ${job.salaryNegotiable ? 'Thỏa thuận' : (job.jobPostingDetail && job.jobPostingDetail.salaryDescription ? job.jobPostingDetail.salaryDescription : 'Chưa cập nhật')}</div>
+        <div class='tags'>
+          ${(Array.isArray(job.skills) ? job.skills : (job.skills ? JSON.parse(job.skills) : [])).map(skill => `<span class='tag'>${skill}</span>`).join("")}
+        </div>
+        <button class='btn main-btn' onclick='showJobDetail(${job.jobId})'>Xem chi tiết</button>
+      </div>
+    `).join("");
+  }
+  section.style.display = '';
+}
+
+function hideSearchResults() {
+  const section = document.getElementById('searchResultsSection');
+  if (section) section.style.display = 'none';
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const searchInput = document.getElementById('jobSearchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const keyword = this.value.trim().toLowerCase();
+      const hotJobsSection = document.querySelector('.hot-jobs-section');
+      const popSec = document.querySelector('.popular-companies-section');
+      const backBtn = document.getElementById('backToHotPopularBtn');
+      if (keyword) {
+        // Hide hot jobs, popular companies, back button
+        if (hotJobsSection) hotJobsSection.style.display = 'none';
+        if (popSec) popSec.style.display = 'none';
+        if (backBtn) backBtn.style.display = 'none';
+        // Filter jobs
+        const filtered = allJobsCache.filter(job => {
+          const fields = [
+            job.jobTitle,
+            job.location,
+            job.companyName,
+            Array.isArray(job.skills) ? job.skills.join(' ') : (job.skills || ''),
+          ];
+          if (job.jobPostingDetail) {
+            fields.push(
+              job.jobPostingDetail.salaryDescription,
+              job.jobPostingDetail.jobLevel,
+              job.jobPostingDetail.workFormat,
+              job.jobPostingDetail.contractType,
+              job.jobPostingDetail.responsibilities,
+              job.jobPostingDetail.requiredSkills,
+              job.jobPostingDetail.benefits
+            );
+          }
+          return fields.some(f => (f || '').toLowerCase().includes(keyword));
+        });
+        renderSearchResults(filtered);
+      } else {
+        // Show hot jobs, popular companies, hide search results
+        if (hotJobsSection) hotJobsSection.style.display = '';
+        if (popSec) popSec.style.display = '';
+        if (backBtn) backBtn.style.display = 'none';
+        hideSearchResults();
+        renderHotJobs(allJobsCache);
+        renderPopularCompanies(allJobsCache);
+      }
+    });
+  }
+});
