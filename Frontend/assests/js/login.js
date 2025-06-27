@@ -99,7 +99,7 @@ async function handleLogin(event) {
       } else if (userRole === "recruiter") {
         window.location.href = "quanly.html";
       } else if (userRole === "candidate") {
-        window.location.href = "index.html";
+        window.location.href = "candidate.html";
       } else {
         alert("Vai trò người dùng không xác định.");
       }

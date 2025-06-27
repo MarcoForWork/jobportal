@@ -64,8 +64,13 @@ public class JobApplicationServiceImpl implements JobApplicationService{
     }
 
     @Override
-    public List<JobApplicationDTO> listCandidateApplications(String userId) {
+    public List<JobApplicationDTO> listApplicationsByUser(String userId) {
         return jobApplicationRepository.findByUserId(userId);
+    }
+
+    @Override
+    public List<JobApplicationDTO> listApplicationsByUserAndState(String userId, JobApplication.State state) {
+        return jobApplicationRepository.findByUserAndState(userId, state);
     }
 
     @Override

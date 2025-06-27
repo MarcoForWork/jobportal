@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Candidate Dashboard - HCTT</title>
+    <link rel="stylesheet" href="../assests/css/candidate.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <header class="topdev-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="candidate.html" class="logo" id="homelogo">HCTT</a>
+          <nav class="main-nav">
+            <b>Candidate Management</b>
+          </nav>
+        </div>
+        <div class="header-right">
+          <div class="user-menu">
+            <div class="menu-toggle">
+              <img
+                src="https://via.placeholder.com/30"
+                alt="User Avatar"
+                class="user-avatar"
+              />
+              <span id="usernameDisplay" style="font-weight: 500"></span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+              <a href="login.html" class="logout-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="candidateDashboardSection" class="dashboard-section">
+        <div class="dashboard-card">
+          <div class="tabs">
+            <button
+              class="tab-link active"
+              onclick="openCandidateTab(event, 'Jobs')"
+            >
+              <i class="fas fa-briefcase"></i> Việc làm
+            </button>
+            <button
+              class="tab-link"
+              onclick="openCandidateTab(event, 'MyResume')"
+            >
+              <i class="fas fa-file-alt"></i> CV của tôi
+            </button>
+            <button
+              class="tab-link"
+              onclick="openCandidateTab(event, 'MyApplications')"
+            >
+              <i class="fas fa-list-check"></i> Đơn ứng tuyển
+            </button>
+          </div>
+
+          <div id="Jobs" class="tab-content">
+            <div class="section-header">
+              <h2>
+                <i class="fas fa-magnifying-glass"></i> Danh sách việc làm
+              </h2>
+            </div>
+            <div id="jobListings" class="job-card-container">
+              <p style="text-align: center; color: #888">
+                Đang tải việc làm...
+              </p>
+            </div>
+          </div>
+
+          <div id="MyResume" class="tab-content" style="display: none">
+            <div class="section-header">
+              <h2><i class="fas fa-file-upload"></i> CV của tôi</h2>
+            </div>
+            <div class="resume-section-content">
+              <p id="resumeStatus">
+                Bạn chưa tải CV nào lên. Vui lòng tải lên CV của bạn.
+              </p>
+              <form id="resumeUploadForm" enctype="multipart/form-data">
+                <input type="file" id="resumeFile" accept=".pdf" required />
+                <button type="submit" class="btn main-btn">
+                  <i class="fas fa-cloud-arrow-up"></i> Tải CV lên
+                </button>
+              </form>
+              <div id="uploadedResumeDisplay" style="margin-top: 20px"></div>
+            </div>
+          </div>
+
+          <div id="MyApplications" class="tab-content" style="display: none">
+            <div class="section-header">
+              <h2><i class="fas fa-inbox"></i> Đơn ứng tuyển của tôi</h2>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tên công việc</th>
+                    <th>Công ty</th>
+                    <th>Ngày ứng tuyển</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="applicationList">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: #888">
+                      Đang tải đơn ứng tuyển...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="jobDetailModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" onclick="closeJobDetailModal()"
+          >&times;</span
+        >
+        <h2 id="jobDetailTitle"></h2>
+        <p><strong>Công ty:</strong> <span id="jobDetailCompany"></span></p>
+        <p><strong>Địa điểm:</strong> <span id="jobDetailLocation"></span></p>
+        <p>
+          <strong>Mức lương:</strong>
+          <span id="jobDetailSalaryDescription"></span>
+        </p>
+        <p><strong>Cấp bậc:</strong> <span id="jobDetailJobLevel"></span></p>
+        <p>
+          <strong>Hình thức làm việc:</strong>
+          <span id="jobDetailWorkFormat"></span>
+        </p>
+        <p>
+          <strong>Loại hợp đồng:</strong>
+          <span id="jobDetailContractType"></span>
+        </p>
+        <h3>Mô tả công việc</h3>
+        <p id="jobDetailDescription"></p>
+        <h3>Trách nhiệm</h3>
+        <ul id="jobDetailResponsibilities"></ul>
+        <h3>Yêu cầu kỹ năng</h3>
+        <ul id="jobDetailSkills"></ul>
+        <h3>Phúc lợi</h3>
+        <ul id="jobDetailBenefits"></ul>
+        <div class="modal-footer">
+          <button class="btn main-btn" onclick="applyToJob()">
+            <i class="fas fa-paper-plane"></i> Ứng tuyển ngay
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../assests/js/candidate.js"></script>
+  </body>
+</html>

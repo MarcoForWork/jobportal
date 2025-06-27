@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hctt.is208.DTO.JobApplicationDTO;
+import com.hctt.is208.model.JobApplication;
 import com.hctt.is208.service.JobApplicationService;
 
 @RestController
@@ -26,11 +27,15 @@ public class JobApplicationController {
     // Candidate
     @GetMapping("/{userId}")
     public ResponseEntity<List<JobApplicationDTO>> listUserJobApplications (
-        @PathVariable String userId
-    ) {
-        List<JobApplicationDTO> userApplications = jobApplicationService.listCandidateApplications(userId);
-        return ResponseEntity.ok(userApplications);
-    }
+        @PathVariable String userId,
+        @RequestParam(name = "state", required = false) JobApplication.State state) 
+        {
+            if (state == null) {
+                return ResponseEntity.ok(jobApplicationService.listApplicationsByUser(userId));
+            } else {
+                return ResponseEntity.ok(jobApplicationService.listApplicationsByUserAndState(userId, state));
+            }
+        }
 
     @PostMapping("/apply/{userId}/{jobId}")
     public ResponseEntity<String> applyJob (
@@ -41,7 +46,7 @@ public class JobApplicationController {
         return ResponseEntity.ok("Application submitted");
     }
 
-    @DeleteMapping("/remove/{userId}/{applicationId}")
+    @DeleteMapping("/{userId}/{applicationId}")
     public ResponseEntity<String> removeJobApplication (
         @PathVariable String userId,
         @PathVariable int applicationId
