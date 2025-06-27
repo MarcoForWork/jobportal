@@ -691,6 +691,19 @@ td {
     margin-top: 2rem;
 }
 
+/* Center all elements in candidate table (Ứng viên, Ngày nộp, Trạng thái, CV, Hành động) */
+.candidate-list-view table th,
+.candidate-list-view table td {
+    text-align: center !important;
+    vertical-align: middle;
+}
+
+/* Center all elements in all main tables (Tin tuyển dụng, Quản lý ứng viên, Thông tin công ty) */
+.dashboard-section table th,
+.dashboard-section table td {
+    text-align: center !important;
+    vertical-align: middle;
+}
 
 /* ======= RESPONSIVE ======= */
 @media (max-width: 900px) {

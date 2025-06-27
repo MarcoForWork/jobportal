@@ -28,6 +28,7 @@
             </ul>
           </div>
         </div>
+<<<<<<< HEAD
 
         <div class="user-menu">
           <div class="menu-toggle">
@@ -39,6 +40,20 @@
             <a href="login.html" class="logout-item" onclick="logout()">
               <i class="fas fa-sign-out-alt"></i> Đăng xuất
             </a>
+=======
+        <div class="header-right">
+          <div class="user-menu">
+            <div class="menu-toggle">
+              <span class="user-avatar"></span>
+              <span id="usernameDisplay" style="font-weight: 500"></span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+              <a href="login.html" class="logout-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+              </a>
+            </div>
+>>>>>>> 7bcc88a94783bb2d1fd44eb4ef11a720f9f28c74
           </div>
         </div>
       </div>
@@ -82,10 +97,57 @@
               </button>
             </div>
           </div>
+<<<<<<< HEAD
           <div id="jobListings" class="job-card-container">
             <p style="text-align: center; color: #888">
               Đang tải việc làm...
             </p>
+=======
+
+          <div id="MyResume" class="tab-content" style="display: none">
+            <div class="section-header">
+              <h2><i class="fas fa-file-upload"></i> CV của tôi</h2>
+            </div>
+            <div class="resume-section-content">
+              <p id="resumeStatus">
+                Bạn chưa tải CV nào lên. Vui lòng tải lên CV của bạn.
+              </p>
+              <form id="resumeUploadForm" enctype="multipart/form-data">
+                <input type="file" id="resumeFile" accept=".pdf" required />
+                <button type="submit" class="btn main-btn">
+                  <i class="fas fa-cloud-arrow-up"></i> Tải CV lên
+                </button>
+              </form>
+              <div id="uploadedResumeDisplay" style="margin-top: 20px"></div>
+            </div>
+          </div>
+
+          <div id="MyApplications" class="tab-content" style="display: none">
+            <div class="section-header">
+              <h2><i class="fas fa-inbox"></i> Đơn ứng tuyển của tôi</h2>
+            </div>
+            <div id="applicationFilterBox"></div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tên công việc</th>
+                    <th>Công ty</th>
+                    <th>Ngày ứng tuyển</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="applicationList">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: #888">
+                      Đang tải đơn ứng tuyển...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+>>>>>>> 7bcc88a94783bb2d1fd44eb4ef11a720f9f28c74
           </div>
         </div>
 
