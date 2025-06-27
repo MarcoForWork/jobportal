@@ -7,20 +7,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hctt.is208.DTO.FileDTO;
+import com.hctt.is208.model.File;
+import com.hctt.is208.repository.FileRepository;
 import com.hctt.is208.service.FileService;
 
 @Service
 public class FileServiceImpl implements FileService {
 
+    @Autowired
+    FileRepository fileRepository;
+
     @Value("${file.upload-dir}")
     private String uploadDir;
+
+    @Override
+    public FileDTO getFileByUserId(String userId) {
+        File file = fileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User chưa có file"));
+        return new FileDTO(file.getFileName(), file.getFilePath(), userId);
+    }
 
     @Override
     public String storeFile(MultipartFile file, String userId) throws IOException {

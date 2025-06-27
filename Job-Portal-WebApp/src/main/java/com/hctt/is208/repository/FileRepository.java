@@ -9,5 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileRepository extends JpaRepository<File, String> {
     Optional<File> findByUserId(String userId);
-
 }

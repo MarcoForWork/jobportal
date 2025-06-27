@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hctt.is208.DTO.FileDTO;
 import com.hctt.is208.model.File;
 import com.hctt.is208.model.User;
 import com.hctt.is208.repository.FileRepository;
@@ -35,6 +36,13 @@ public class FileController {
 
     @Autowired
     private UserRepository userRepository;
+
+    // Get file info
+    @GetMapping("/{userId}")
+    public ResponseEntity<FileDTO> getFileInfo(@PathVariable String userId) {
+        FileDTO fileDTO = fileService.getFileByUserId(userId);
+        return ResponseEntity.ok(fileDTO);
+    }   
 
 
     // Upload file
