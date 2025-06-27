@@ -57,13 +57,15 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     )
     Optional<JobApplicationDTO> findByUserAndJobPostId(@Param("userId") String userId, @Param("jobId") long jobId);
 
-    // Dùng constructor (id, applyDate, state, jobPosting, user)
+
     @Query(
-        "SELECT new com.hctt.is208.DTO.JobApplicationDTO(ja.id, ja.applyDate, ja.state, jp, u) " +
+        "SELECT new com.hctt.is208.DTO.JobApplicationDTO(" +
+        "ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state, u.id, jp.jobId) " +
         "FROM JobApplication ja " +
         "JOIN ja.jobPosting jp " +
+        "JOIN jp.company c " +
         "JOIN ja.user u " +
-        "WHERE ja.jobPosting.jobId = :jobId"
+        "WHERE jp.jobId = :jobId"
     )
     List<JobApplicationDTO> findByJobId(@Param("jobId") long jobId);
 }

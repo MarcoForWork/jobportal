@@ -75,7 +75,7 @@ function formatJsonToList(jsonString) {
 }
 
 // =================================================================
-// ==================== LOGIC QUẢN LÝ VIỆC LÀM (called by initializeApp) ====
+// ==================== LOGIC QUẢN LÝ VIỆC LÀM =====================
 // =================================================================
 
 function renderJobCards(jobs) {
@@ -237,7 +237,7 @@ async function applyToJob() {
 }
 
 // =================================================================
-// ==================== LOGIC QUẢN LÝ CV (called by initializeApp) ====
+// ==================== LOGIC QUẢN LÝ CV ===========================
 // =================================================================
 
 async function checkUserResume() {
@@ -258,18 +258,45 @@ async function checkUserResume() {
       const fileData = await response.json();
       userHasResume = true;
       resumeStatusElement.textContent = `Bạn đã tải lên CV: ${fileData.fileName}`;
-      // Assuming you want to display the PDF directly, you'd need the download URL.
-      // For now, let's just provide a link or an embed viewer if the path is accessible.
+
       uploadedResumeDisplayElement.innerHTML = `
-                <p>Xem CV của bạn:</p>
-                <embed src="${API_BASE_URL}/files/download/${currentUser.id}" type="application/pdf" width="100%" height="500px" />
-                <a href="${API_BASE_URL}/files/download/${currentUser.id}" target="_blank" class="btn">Tải xuống CV</a>
-            `;
+        <p>CV của bạn đã được tải lên.</p>
+        <button class="btn main-btn" id="viewResumeButton">
+          <i class="fas fa-eye"></i> Xem CV
+        </button>
+        <a href="${API_BASE_URL}/files/download/${currentUser.id}" target="_blank" class="btn">
+          <i class="fas fa-download"></i> Tải xuống CV
+        </a>
+        <div id="resumeViewer" style="margin-top: 20px; display: none;"></div>
+      `;
+
+      // Improved View CV toggle logic
+      document
+        .getElementById("viewResumeButton")
+        .addEventListener("click", function () {
+          const resumeViewer = document.getElementById("resumeViewer");
+          const isVisible = resumeViewer.style.display === "block";
+
+          if (!isVisible) {
+            resumeViewer.innerHTML = `
+            <embed src="${API_BASE_URL}/files/download/${currentUser.id}" 
+                   type="application/pdf" width="100%" height="500px" />
+          `;
+          } else {
+            resumeViewer.innerHTML = "";
+          }
+
+          resumeViewer.style.display = isVisible ? "none" : "block";
+
+          this.innerHTML = isVisible
+            ? '<i class="fas fa-eye"></i> Xem CV'
+            : '<i class="fas fa-eye-slash"></i> Ẩn CV';
+        });
     } else if (response.status === 404) {
       userHasResume = false;
       resumeStatusElement.textContent =
         "Bạn chưa tải CV nào lên. Vui lòng tải lên CV của bạn.";
-      uploadedResumeDisplayElement.innerHTML = ""; // Clear any previous display
+      uploadedResumeDisplayElement.innerHTML = "";
     } else {
       throw new Error(`Lỗi kiểm tra CV: ${response.statusText}`);
     }
@@ -282,7 +309,7 @@ async function checkUserResume() {
 }
 
 // =================================================================
-// ==================== LOGIC QUẢN LÝ ĐƠN ỨNG TUYỂN (called by initializeApp) ====
+// ==================== LOGIC QUẢN LÝ ĐƠN ỨNG TUYỂN ================
 // =================================================================
 
 function renderApplications(applications) {
@@ -389,8 +416,6 @@ async function removeJobApplication(applicationId) {
   }
 }
 
-// Ensure loadAllJobPostings is defined after loadUserJobApplications
-// as it depends on userAppliedJobIds being populated
 async function loadAllJobPostings() {
   const token = localStorage.getItem("authToken");
   try {
@@ -422,7 +447,6 @@ async function loadAllJobPostings() {
 
 /**
  * Hàm khởi tạo chính, được gọi khi trang tải xong.
- * This should be defined AFTER all functions it calls.
  */
 async function initializeApp() {
   const token = localStorage.getItem("authToken");
