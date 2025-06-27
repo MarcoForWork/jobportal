@@ -26,7 +26,9 @@ public class JobApplicationDTO {
     private String userId;
     private int jobId;
 
-    // Constructor dùng trong JPQL: cần đúng thứ tự tham số như trong query
+    private String firstName;
+    private String lastName;
+
     public JobApplicationDTO(int id, String jobTitle, String companyName, LocalDateTime applyDate, JobApplication.State state) {
         this.id = id;
         this.jobTitle = jobTitle;
@@ -44,6 +46,19 @@ public class JobApplicationDTO {
         this.state = state;
         this.userId = userId;
         this.jobId = jobId;
+    }
+
+    public JobApplicationDTO(int id, int jobId, String jobTitle, String companyName, LocalDateTime applyDate, JobApplication.State state, 
+        String userId, String firstName, String lastName) {
+        this.id = id;
+        this.jobTitle = jobTitle;
+        this.companyName = companyName;
+        this.applyDate = applyDate;
+        this.state = state;
+        this.userId = userId;
+        this.jobId = jobId;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public JobApplicationDTO(int id, LocalDateTime applyDate, JobApplication.State state, JobPosting jobPosting, User user) {

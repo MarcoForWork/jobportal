@@ -57,7 +57,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     @Query(
         "SELECT new com.hctt.is208.DTO.JobApplicationDTO(" +
-        "ja.id, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state, u.id, jp.jobId) " +
+        "ja.id, jp.jobId, jp.jobTitle, jp.company.companyName, ja.applyDate, ja.state, u.id, u.firstName, u.lastName) " +
         "FROM JobApplication ja " +
         "JOIN ja.jobPosting jp " +
         "JOIN jp.company c " +
