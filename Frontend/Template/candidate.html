@@ -15,9 +15,7 @@
       <div class="header-container">
         <div class="header-left">
           <a href="candidate.html" class="logo" id="homelogo">HCTT</a>
-          <nav class="main-nav">
-            <b>Candidate Management</b>
-          </nav>
+          <nav class="main-nav"></nav>
         </div>
         <div class="header-right">
           <div class="user-menu">
@@ -69,9 +67,28 @@
               <h2>
                 <i class="fas fa-magnifying-glass"></i> Danh sách việc làm
               </h2>
-              <div style="margin: 12px 0; display: flex; gap: 8px; align-items: center;">
-                <input id="jobSearchInput" type="text" placeholder="Tìm kiếm công việc..." style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; min-width: 220px;" />
-                <button id="jobSearchBtn" class="btn main-btn" type="button"><i class="fas fa-search"></i> Tìm kiếm</button>
+              <div
+                style="
+                  margin: 12px 0;
+                  display: flex;
+                  gap: 8px;
+                  align-items: center;
+                "
+              >
+                <input
+                  id="jobSearchInput"
+                  type="text"
+                  placeholder="Tìm kiếm công việc..."
+                  style="
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    border: 1px solid #ccc;
+                    min-width: 220px;
+                  "
+                />
+                <button id="jobSearchBtn" class="btn main-btn" type="button">
+                  <i class="fas fa-search"></i> Tìm kiếm
+                </button>
               </div>
             </div>
             <div id="jobListings" class="job-card-container">
@@ -134,28 +151,38 @@
           >&times;</span
         >
         <h2 id="jobDetailTitle"></h2>
-        <p style="color:#d32f2f;font-weight:bold;margin-bottom:4px;" id="jobDetailCompany"></p>
-        <div style="margin-bottom:8px;">
-          <span id="jobDetailLocation" style="margin-right:12px;"></span>
+        <p
+          style="color: #d32f2f; font-weight: bold; margin-bottom: 4px"
+          id="jobDetailCompany"
+        ></p>
+        <div style="margin-bottom: 8px">
+          <span id="jobDetailLocation" style="margin-right: 12px"></span>
         </div>
-        <div id="jobDetailTags" style="margin-bottom:8px;"></div>
-        <div style="margin-bottom:8px;">
+        <div id="jobDetailTags" style="margin-bottom: 8px"></div>
+        <div style="margin-bottom: 8px">
           <b>Mức lương:</b> <span id="jobDetailSalaryDescription"></span>
-          <b style="margin-left:16px;">Cấp bậc:</b> <span id="jobDetailJobLevel"></span>
-          <b style="margin-left:16px;">Hình thức:</b> <span id="jobDetailWorkFormat"></span>
-          <b style="margin-left:16px;">Hợp đồng:</b> <span id="jobDetailContractType"></span>
+          <b style="margin-left: 16px">Cấp bậc:</b>
+          <span id="jobDetailJobLevel"></span>
+          <b style="margin-left: 16px">Hình thức:</b>
+          <span id="jobDetailWorkFormat"></span>
+          <b style="margin-left: 16px">Hợp đồng:</b>
+          <span id="jobDetailContractType"></span>
         </div>
-        <div class="modal-footer" style="text-align:right;">
+        <div class="modal-footer" style="text-align: right">
           <button class="btn main-btn" onclick="applyToJob()">
             <i class="fas fa-paper-plane"></i> Ứng tuyển ngay
           </button>
         </div>
-        <hr/>
-        <h3 style="color:#d32f2f;"><i class="fas fa-clipboard-list"></i> Trách nhiệm công việc</h3>
+        <hr />
+        <h3 style="color: #d32f2f">
+          <i class="fas fa-clipboard-list"></i> Trách nhiệm công việc
+        </h3>
         <ul id="jobDetailResponsibilities"></ul>
-        <h3 style="color:#333;"><i class="fas fa-tools"></i> Kỹ năng & Chuyên môn</h3>
+        <h3 style="color: #333">
+          <i class="fas fa-tools"></i> Kỹ năng & Chuyên môn
+        </h3>
         <ul id="jobDetailSkills"></ul>
-        <h3 style="color:#388e3c;"><i class="fas fa-gift"></i> Phúc lợi</h3>
+        <h3 style="color: #388e3c"><i class="fas fa-gift"></i> Phúc lợi</h3>
         <ul id="jobDetailBenefits"></ul>
       </div>
     </div>

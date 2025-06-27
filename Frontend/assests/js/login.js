@@ -92,8 +92,6 @@ async function handleLogin(event) {
       const userRole = decodedToken.role.trim().toLowerCase();
       console.log("4. VAI TRÒ NGƯỜI DÙNG CUỐI CÙNG:", userRole);
 
-      alert("Đăng nhập thành công! Chuẩn bị chuyển hướng...");
-
       if (userRole === "admin") {
         window.location.href = "admin.html";
       } else if (userRole === "recruiter") {
