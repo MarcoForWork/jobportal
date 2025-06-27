@@ -3,6 +3,7 @@ let currentUser = null;
 let userHasResume = false; // Thêm biến để kiểm tra trạng thái CV
 let selectedJobForDetail = null; // Biến để lưu trữ chi tiết công việc đang xem
 let userAppliedJobIds = new Set(); // Thêm Set để lưu trữ jobId của các công việc đã ứng tuyển
+let allJobsCache = [];
 
 // Đổi tên biến để dễ sử dụng hơn
 const API_BASE_URL = "http://localhost:8080/jobportal/api";
@@ -63,14 +64,19 @@ function closeJobDetailModal() {
 function formatJsonToList(jsonString) {
   if (!jsonString) return "<li>N/A</li>";
   try {
+    // Nếu là JSON array
     const items = JSON.parse(jsonString);
     if (Array.isArray(items) && items.length > 0) {
       return items.map((item) => `<li>${item}</li>`).join("");
     }
+    // Nếu là chuỗi, tách theo dòng
+    if (typeof items === "string") {
+      return items.split(/\r?\n/).filter(line => line.trim() !== "").map(line => `<li>${line}</li>`).join("");
+    }
     return "<li>N/A</li>";
   } catch (e) {
-    console.error("Error parsing JSON string:", e);
-    return `<li>${jsonString}</li>`; // Return as-is if not valid JSON
+    // Nếu không phải JSON hợp lệ, tách theo dòng
+    return jsonString.split(/\r?\n/).filter(line => line.trim() !== "").map(line => `<li>${line}</li>`).join("");
   }
 }
 
@@ -112,60 +118,60 @@ function renderJobCards(jobs) {
 async function showJobDetail(jobId) {
   const token = localStorage.getItem("authToken");
   try {
-    const response = await fetch(`${API_BASE_URL}/jobpostings/${jobId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-cache",
-    });
-    if (!response.ok) throw new Error("Không thể tải chi tiết việc làm.");
-    selectedJobForDetail = await response.json(); // Lưu chi tiết công việc
-    console.log("Job Detail:", selectedJobForDetail);
-
-    document.getElementById("jobDetailTitle").textContent =
-      selectedJobForDetail.jobTitle;
-    document.getElementById("jobDetailCompany").textContent =
-      selectedJobForDetail.company
-        ? selectedJobForDetail.company.companyName
-        : "N/A";
-    document.getElementById("jobDetailLocation").textContent =
-      selectedJobForDetail.location;
-
-    // Load JobPostingDetail if available
-    if (selectedJobForDetail.jobPostingDetail) {
-      const detail = selectedJobForDetail.jobPostingDetail;
-      document.getElementById("jobDetailSalaryDescription").textContent =
-        detail.salaryDescription || "Thỏa thuận";
-      document.getElementById("jobDetailJobLevel").textContent =
-        detail.jobLevel || "N/A";
-      document.getElementById("jobDetailWorkFormat").textContent =
-        detail.workFormat || "N/A";
-      document.getElementById("jobDetailContractType").textContent =
-        detail.contractType || "N/A";
-      document.getElementById("jobDetailDescription").textContent =
-        detail.jobDescription || "N/A";
-
-      // Responsibilities, Skills, Benefits are JSON strings in JobPostingDetail
-      document.getElementById("jobDetailResponsibilities").innerHTML =
-        formatJsonToList(detail.responsibilities);
-      document.getElementById("jobDetailSkills").innerHTML = formatJsonToList(
-        detail.requiredSkills
-      );
-      document.getElementById("jobDetailBenefits").innerHTML = formatJsonToList(
-        detail.benefits
-      );
+    // Gọi song song cả hai API
+    const [jobRes, detailRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/jobpostings/${jobId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-cache",
+      }),
+      fetch(`${API_BASE_URL}/jobpostings/${jobId}/details`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-cache",
+      })
+    ]);
+    if (!jobRes.ok) throw new Error("Không thể tải chi tiết việc làm.");
+    const jobData = await jobRes.json();
+    let detailData = null;
+    if (detailRes.ok) {
+      detailData = await detailRes.json();
+    }
+    selectedJobForDetail = jobData; // Lưu chi tiết công việc
+    // Hiển thị các trường từ jobData
+    document.getElementById("jobDetailTitle").textContent = jobData.jobTitle || "N/A";
+    document.getElementById("jobDetailCompany").textContent = jobData.companyName || "N/A";
+    document.getElementById("jobDetailLocation").textContent = jobData.location || "N/A";
+    // Hiển thị tag kỹ năng
+    const tagContainer = document.getElementById("jobDetailTags");
+    tagContainer.innerHTML = "";
+    let skillsArr = [];
+    if (jobData.skills) {
+      try {
+        skillsArr = Array.isArray(jobData.skills) ? jobData.skills : JSON.parse(jobData.skills);
+      } catch (e) {
+        // Nếu không phải JSON hợp lệ thì bỏ qua
+      }
+    }
+    if (skillsArr && Array.isArray(skillsArr) && skillsArr.length > 0) {
+      tagContainer.innerHTML = skillsArr.map(skill => `<span style='display:inline-block;background:#eee;border-radius:16px;padding:4px 12px;margin:2px 4px 2px 0;font-size:13px;'>${skill}</span>`).join("");
+    }
+    // Ưu tiên lấy detail nếu có, fallback sang jobData nếu không
+    if (detailData) {
+      document.getElementById("jobDetailSalaryDescription").textContent = detailData.salaryDescription || (jobData.salaryNegotiable ? "Thỏa thuận" : "N/A");
+      document.getElementById("jobDetailJobLevel").textContent = detailData.jobLevel || "N/A";
+      document.getElementById("jobDetailWorkFormat").textContent = detailData.workFormat || "N/A";
+      document.getElementById("jobDetailContractType").textContent = detailData.contractType || "N/A";
+      document.getElementById("jobDetailResponsibilities").innerHTML = formatJsonToList(detailData.responsibilities);
+      document.getElementById("jobDetailSkills").innerHTML = formatJsonToList(detailData.requiredSkills);
+      document.getElementById("jobDetailBenefits").innerHTML = formatJsonToList(detailData.benefits);
     } else {
-      // Clear or set to N/A if no detail
-      document.getElementById("jobDetailSalaryDescription").textContent =
-        "Thỏa thuận (chưa có chi tiết)";
+      document.getElementById("jobDetailSalaryDescription").textContent = jobData.salaryNegotiable ? "Thỏa thuận" : "N/A";
       document.getElementById("jobDetailJobLevel").textContent = "N/A";
       document.getElementById("jobDetailWorkFormat").textContent = "N/A";
       document.getElementById("jobDetailContractType").textContent = "N/A";
-      document.getElementById("jobDetailDescription").textContent =
-        "Chưa có mô tả chi tiết.";
       document.getElementById("jobDetailResponsibilities").innerHTML = "";
       document.getElementById("jobDetailSkills").innerHTML = "";
       document.getElementById("jobDetailBenefits").innerHTML = "";
     }
-
     document.getElementById("jobDetailModal").style.display = "block"; // Show the modal
   } catch (error) {
     alert("Không thể hiển thị chi tiết việc làm: " + error.message);
@@ -396,7 +402,6 @@ async function loadUserJobApplications() {
 
     // Lưu trữ các jobId mà người dùng đã ứng tuyển vào Set
     applications.forEach((app) => {
-      // CORRECTION HERE (as identified in previous turn): Use app.jobId directly
       if (app.jobId) {
         userAppliedJobIds.add(app.jobId);
       }
@@ -456,25 +461,80 @@ async function loadAllJobPostings() {
     });
     if (!response.ok) throw new Error("Không thể tải danh sách việc làm.");
     const jobs = await response.json();
-
     // Lọc các công việc đã được apply và các công việc không active
     const jobsToDisplay = jobs.filter((job) => {
-      const isActiveValue = job.isActive;
-      // Chỉ hiển thị nếu công việc active VÀ người dùng chưa ứng tuyển
-      return (
-        (isActiveValue === true || isActiveValue === 1) &&
-        !userAppliedJobIds.has(job.jobId)
-      );
+      return job.status === "APPROVED" && !userAppliedJobIds.has(job.jobId);
     });
-
+    // Lấy detail cho từng job (song song)
+    const detailPromises = jobsToDisplay.map(job =>
+      fetch(`${API_BASE_URL}/jobpostings/${job.jobId}/details`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-cache",
+      })
+      .then(res => res.ok ? res.json() : null)
+      .catch(() => null)
+    );
+    const details = await Promise.all(detailPromises);
+    jobsToDisplay.forEach((job, idx) => {
+      job.jobPostingDetail = details[idx];
+    });
+    allJobsCache = jobsToDisplay; // Lưu cache để search
+    // Thêm log kiểm tra dữ liệu
+    console.log("allJobsCache", allJobsCache);
+    allJobsCache.forEach((job, idx) => {
+      console.log(`Job ${idx} - jobPostingDetail:`, job.jobPostingDetail);
+    });
     renderJobCards(jobsToDisplay);
   } catch (error) {
     console.error("Lỗi tải danh sách việc làm:", error);
     document.getElementById(
       "jobListings"
-    ).innerHTML = `<p style="text-align:center;color:red;">Lỗi tải dữ liệu: ${error.message}</p>`;
+    ).innerHTML = `<p style=\"text-align:center;color:red;\">Lỗi tải dữ liệu: ${error.message}</p>`;
   }
 }
+
+// Thêm hàm search
+function searchJobs() {
+  const keyword = document.getElementById("jobSearchInput").value.trim().toLowerCase();
+  if (!keyword) {
+    renderJobCards(allJobsCache);
+    return;
+  }
+  const filtered = allJobsCache.filter(job => {
+    // Các trường cơ bản
+    const fields = [
+      job.jobTitle,
+      job.location,
+      job.companyName,
+      
+      Array.isArray(job.skills) ? job.skills.join(" ") : (job.skills || ""),
+    ];
+    // Các trường chi tiết nếu có
+    if (job.jobPostingDetail) {
+      fields.push(
+        job.jobPostingDetail.salaryDescription,
+        job.jobPostingDetail.jobLevel,
+        job.jobPostingDetail.workFormat,
+        job.jobPostingDetail.contractType,
+        job.jobPostingDetail.responsibilities,
+        job.jobPostingDetail.requiredSkills,
+        job.jobPostingDetail.benefits
+      );
+    }
+    return fields.some(f => (f || "").toLowerCase().includes(keyword));
+  });
+  renderJobCards(filtered);
+}
+
+// Thêm event cho search box
+setTimeout(() => {
+  const searchBtn = document.getElementById("jobSearchBtn");
+  const searchInput = document.getElementById("jobSearchInput");
+  if (searchBtn) searchBtn.onclick = searchJobs;
+  if (searchInput) {
+    searchInput.oninput = searchJobs;
+  }
+}, 500);
 
 /**
  * Hàm khởi tạo chính, được gọi khi trang tải xong.

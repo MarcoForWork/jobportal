@@ -69,6 +69,10 @@
               <h2>
                 <i class="fas fa-magnifying-glass"></i> Danh sách việc làm
               </h2>
+              <div style="margin: 12px 0; display: flex; gap: 8px; align-items: center;">
+                <input id="jobSearchInput" type="text" placeholder="Tìm kiếm công việc..." style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; min-width: 220px;" />
+                <button id="jobSearchBtn" class="btn main-btn" type="button"><i class="fas fa-search"></i> Tìm kiếm</button>
+              </div>
             </div>
             <div id="jobListings" class="job-card-container">
               <p style="text-align: center; color: #888">
@@ -130,34 +134,29 @@
           >&times;</span
         >
         <h2 id="jobDetailTitle"></h2>
-        <p><strong>Công ty:</strong> <span id="jobDetailCompany"></span></p>
-        <p><strong>Địa điểm:</strong> <span id="jobDetailLocation"></span></p>
-        <p>
-          <strong>Mức lương:</strong>
-          <span id="jobDetailSalaryDescription"></span>
-        </p>
-        <p><strong>Cấp bậc:</strong> <span id="jobDetailJobLevel"></span></p>
-        <p>
-          <strong>Hình thức làm việc:</strong>
-          <span id="jobDetailWorkFormat"></span>
-        </p>
-        <p>
-          <strong>Loại hợp đồng:</strong>
-          <span id="jobDetailContractType"></span>
-        </p>
-        <h3>Mô tả công việc</h3>
-        <p id="jobDetailDescription"></p>
-        <h3>Trách nhiệm</h3>
-        <ul id="jobDetailResponsibilities"></ul>
-        <h3>Yêu cầu kỹ năng</h3>
-        <ul id="jobDetailSkills"></ul>
-        <h3>Phúc lợi</h3>
-        <ul id="jobDetailBenefits"></ul>
-        <div class="modal-footer">
+        <p style="color:#d32f2f;font-weight:bold;margin-bottom:4px;" id="jobDetailCompany"></p>
+        <div style="margin-bottom:8px;">
+          <span id="jobDetailLocation" style="margin-right:12px;"></span>
+        </div>
+        <div id="jobDetailTags" style="margin-bottom:8px;"></div>
+        <div style="margin-bottom:8px;">
+          <b>Mức lương:</b> <span id="jobDetailSalaryDescription"></span>
+          <b style="margin-left:16px;">Cấp bậc:</b> <span id="jobDetailJobLevel"></span>
+          <b style="margin-left:16px;">Hình thức:</b> <span id="jobDetailWorkFormat"></span>
+          <b style="margin-left:16px;">Hợp đồng:</b> <span id="jobDetailContractType"></span>
+        </div>
+        <div class="modal-footer" style="text-align:right;">
           <button class="btn main-btn" onclick="applyToJob()">
             <i class="fas fa-paper-plane"></i> Ứng tuyển ngay
           </button>
         </div>
+        <hr/>
+        <h3 style="color:#d32f2f;"><i class="fas fa-clipboard-list"></i> Trách nhiệm công việc</h3>
+        <ul id="jobDetailResponsibilities"></ul>
+        <h3 style="color:#333;"><i class="fas fa-tools"></i> Kỹ năng & Chuyên môn</h3>
+        <ul id="jobDetailSkills"></ul>
+        <h3 style="color:#388e3c;"><i class="fas fa-gift"></i> Phúc lợi</h3>
+        <ul id="jobDetailBenefits"></ul>
       </div>
     </div>
 
